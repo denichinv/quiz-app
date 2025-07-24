@@ -4,6 +4,9 @@ import { QuizQuestion, QuizQuestionWithAnswers } from "./types/Quiz";
 
 function App() {
   const [questions, setQuestions] = useState<QuizQuestionWithAnswers[]>([]);
+  const [selectAnswer, setSelectAnswer] = useState<string | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const currentQuestion = questions[currentQuestionIndex];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -14,21 +17,50 @@ function App() {
     fetchData();
   }, []);
 
+  const handleAnswerClick = (answer: string) => {
+    setSelectAnswer(answer);
+  };
+
+  const getAnswerClass = (
+    answer: string,
+    correct: string,
+    selected: string | null
+  ) => {
+    if (!selected) return "";
+    if (answer !== selected) return "";
+    return answer === correct ? "correct" : "incorrect";
+  };
+
   return (
     <>
       <h1>Quiz App</h1>
 
-      {questions.map((q, index) => (
-        <div key={index}>
-          <h2 dangerouslySetInnerHTML={{ __html: q.question }} />
-          {q.answers.map((answer, i) => (
+      {currentQuestion && (
+        <div>
+          <h2 dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
+          {currentQuestion.answers.map((answer, i) => (
             <button
               key={i}
+              onClick={() => handleAnswerClick(answer)}
+              disabled={!!selectAnswer}
+              className={getAnswerClass(
+                answer,
+                currentQuestion.correct_answer,
+                selectAnswer
+              )}
               dangerouslySetInnerHTML={{ __html: answer }}
-            ></button>
+            />
           ))}
+
+          {selectAnswer && (
+            <p>
+              {selectAnswer === currentQuestion.correct_answer
+                ? "✅ Correct!"
+                : `❌ Incorrect. Correct answer: ${currentQuestion.correct_answer}`}
+            </p>
+          )}
         </div>
-      ))}
+      )}
     </>
   );
 }

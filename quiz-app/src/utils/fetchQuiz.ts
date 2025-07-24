@@ -25,14 +25,23 @@ export const fetchQuizQuestions = async (): Promise<
     return [];
   }
 
-  return data.map((q: any) => ({
-    question: q.question,
-    correct_answer: q.correct_answer,
-    incorrect_answers: Object.values(q.answers).filter(
-      (a): a is string => a !== null && a !== q.correct_answer
-    ),
-    answers: shuffleArray(
-      Object.values(q.answers).filter((a): a is string => a !== null)
-    ),
-  }));
+  return data.map((q: any) => {
+    const allAnswers = Object.entries(q.answers)
+      .filter(([_, value]) => value !== null)
+      .map(([_, value]) => value as string);
+
+    const correctKey = Object.entries(q.correct_answers).find(
+      ([_, isCorrect]) => isCorrect === "true"
+    )?.[0];
+
+    const correctAnswerKey = correctKey?.replace("_correct", "");
+    const correctAnswer = correctAnswerKey ? q.answers[correctAnswerKey] : "";
+
+    return {
+      question: q.question,
+      correct_answer: correctAnswer,
+      incorrect_answers: allAnswers.filter((a) => a !== correctAnswer),
+      answers: shuffleArray(allAnswers),
+    };
+  });
 };
