@@ -1,24 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { fetchQuizQuestions } from "./utils/fetchQuiz";
-import { QuizQuestion, QuizQuestionWithAnswers } from "./types/Quiz";
+import { QuizQuestionWithAnswers } from "./types/Quiz";
 
 function App() {
   const [questions, setQuestions] = useState<QuizQuestionWithAnswers[]>([]);
   const [selectAnswer, setSelectAnswer] = useState<string | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [score, setScore] = useState(0);
+
   const currentQuestion = questions[currentQuestionIndex];
 
   useEffect(() => {
     const fetchData = async () => {
-      const questions = await fetchQuizQuestions();
-      setQuestions(questions);
-      console.log(questions);
+      const fetchedQuestions = await fetchQuizQuestions();
+      setQuestions(fetchedQuestions);
+      console.log(fetchedQuestions);
     };
     fetchData();
   }, []);
 
   const handleAnswerClick = (answer: string) => {
     setSelectAnswer(answer);
+
+    if (answer === currentQuestion.correct_answer) {
+      setScore((prev) => prev + 1);
+    }
+  };
+
+  const handleNextQuestion = () => {
+    setSelectAnswer(null);
+    setCurrentQuestionIndex((prev) => prev + 1);
   };
 
   const getAnswerClass = (
@@ -34,10 +45,14 @@ function App() {
   return (
     <>
       <h1>Quiz App</h1>
+      <p>
+        Score: {score} / {questions.length}
+      </p>
 
       {currentQuestion && (
         <div>
           <h2 dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
+
           {currentQuestion.answers.map((answer, i) => (
             <button
               key={i}
@@ -53,11 +68,24 @@ function App() {
           ))}
 
           {selectAnswer && (
-            <p>
-              {selectAnswer === currentQuestion.correct_answer
-                ? "✅ Correct!"
-                : `❌ Incorrect. Correct answer: ${currentQuestion.correct_answer}`}
-            </p>
+            <div>
+              <p>
+                {selectAnswer === currentQuestion.correct_answer
+                  ? "✅ Correct!"
+                  : `❌ Incorrect. Correct answer: ${currentQuestion.correct_answer}`}
+              </p>
+
+              {currentQuestionIndex < questions.length - 1 && (
+                <button onClick={handleNextQuestion}>Next Question →</button>
+              )}
+
+              {currentQuestionIndex === questions.length - 1 && (
+                <p>
+                  🎉 You have completed the quiz! <br />
+                  Final Score: {score} / {questions.length}
+                </p>
+              )}
+            </div>
           )}
         </div>
       )}
