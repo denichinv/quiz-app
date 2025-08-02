@@ -32,6 +32,12 @@ function App() {
     setCurrentQuestionIndex((prev) => prev + 1);
   };
 
+  const handleRestart = () => {
+    setSelectAnswer(null);
+    setCurrentQuestionIndex(0);
+    setScore(0);
+  };
+
   const getAnswerClass = (
     answer: string,
     correct: string,
@@ -48,6 +54,7 @@ function App() {
       <p>
         Score: {score} / {questions.length}
       </p>
+      <button onClick={handleRestart}>🔄 Restart Quiz</button>
 
       {currentQuestion && (
         <div>
