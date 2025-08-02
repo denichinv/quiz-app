@@ -7,17 +7,43 @@ function App() {
   const [selectAnswer, setSelectAnswer] = useState<string | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [category, setCategory] = useState("");
+  const [difficulty, setDifficulty] = useState("");
+  const [limit, setLimit] = useState(5);
 
   const currentQuestion = questions[currentQuestionIndex];
+  const categories = [
+    "Linux",
+    "Bash",
+    "Docker",
+    "Kubernetes",
+    "SQL",
+    "DevOps",
+    "CMS",
+    "PHP",
+    "HTML",
+    "WordPress",
+  ];
+
+  const escapeHTMLTags = (str: string) => {
+    return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  };
 
   useEffect(() => {
+    if (!gameStarted) return;
+
     const fetchData = async () => {
-      const fetchedQuestions = await fetchQuizQuestions();
+      const fetchedQuestions = await fetchQuizQuestions(
+        category,
+        difficulty,
+        limit
+      );
       setQuestions(fetchedQuestions);
-      console.log(fetchedQuestions);
     };
+
     fetchData();
-  }, []);
+  }, [gameStarted, category, difficulty, limit]);
 
   const handleAnswerClick = (answer: string) => {
     setSelectAnswer(answer);
@@ -50,51 +76,97 @@ function App() {
 
   return (
     <>
-      <h1>Quiz App</h1>
-      <p>
-        Score: {score} / {questions.length}
-      </p>
-      <button onClick={handleRestart}>🔄 Restart Quiz</button>
-
-      {currentQuestion && (
+      {!gameStarted ? (
         <div>
-          <h2 dangerouslySetInnerHTML={{ __html: currentQuestion.question }} />
+          <h1>Quiz Setup</h1>
 
-          {currentQuestion.answers.map((answer, i) => (
-            <button
-              key={i}
-              onClick={() => handleAnswerClick(answer)}
-              disabled={!!selectAnswer}
-              className={getAnswerClass(
-                answer,
-                currentQuestion.correct_answer,
-                selectAnswer
-              )}
-              dangerouslySetInnerHTML={{ __html: answer }}
-            />
-          ))}
+          <label>Category:</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value="">Any</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
 
-          {selectAnswer && (
+          <label>Difficulty:</label>
+          <select
+            value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value)}
+          >
+            <option value="">Any</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+          <label>Number of Questions:</label>
+          <select
+            value={limit}
+            onChange={(e) => setLimit(Number(e.target.value))}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+          </select>
+
+          <button onClick={() => setGameStarted(true)}>Start Quiz</button>
+        </div>
+      ) : (
+        <>
+          <h1>Quiz App</h1>
+          <p>
+            Score: {score} / {questions.length}
+          </p>
+          <button onClick={handleRestart}>🔄 Restart Quiz</button>
+          {currentQuestion && (
             <div>
-              <p>
-                {selectAnswer === currentQuestion.correct_answer
-                  ? "✅ Correct!"
-                  : `❌ Incorrect. Correct answer: ${currentQuestion.correct_answer}`}
-              </p>
+              <h2
+                dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
+              />
+              {currentQuestion.answers.map((answer, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleAnswerClick(answer)}
+                  disabled={!!selectAnswer}
+                  className={getAnswerClass(
+                    answer,
+                    currentQuestion.correct_answer,
+                    selectAnswer
+                  )}
+                  dangerouslySetInnerHTML={{ __html: answer }}
+                />
+              ))}
 
-              {currentQuestionIndex < questions.length - 1 && (
-                <button onClick={handleNextQuestion}>Next Question →</button>
-              )}
+              {selectAnswer && (
+                <div>
+                  <p>
+                    {selectAnswer === currentQuestion.correct_answer
+                      ? "✅ Correct!"
+                      : `❌ Incorrect. Correct answer: ${currentQuestion.correct_answer}`}
+                  </p>
 
-              {currentQuestionIndex === questions.length - 1 && (
-                <p>
-                  🎉 You have completed the quiz! <br />
-                  Final Score: {score} / {questions.length}
-                </p>
+                  {currentQuestionIndex < questions.length - 1 && (
+                    <button onClick={handleNextQuestion}>
+                      Next Question →
+                    </button>
+                  )}
+
+                  {currentQuestionIndex === questions.length - 1 && (
+                    <p>
+                      🎉 You have completed the quiz! <br />
+                      Final Score: {score} / {questions.length}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           )}
-        </div>
+        </>
       )}
     </>
   );

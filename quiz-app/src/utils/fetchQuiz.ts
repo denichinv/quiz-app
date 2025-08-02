@@ -1,21 +1,27 @@
 import { QuizQuestionWithAnswers } from "../types/Quiz";
 import { shuffleArray } from "./shuffleArray";
 
-export const fetchQuizQuestions = async (): Promise<
-  QuizQuestionWithAnswers[]
-> => {
+export const fetchQuizQuestions = async (
+  category: string,
+  difficulty: string,
+  limit: number
+): Promise<QuizQuestionWithAnswers[]> => {
   const API_KEY = process.env.REACT_APP_QUIZ_API_KEY;
 
   if (!API_KEY) {
     console.error("API key is missing");
     return [];
   }
-
-  const res = await fetch("https://quizapi.io/api/v1/questions?limit=5", {
-    headers: {
-      "X-Api-Key": API_KEY,
-    },
-  });
+  const res = await fetch(
+    `https://quizapi.io/api/v1/questions?limit=${limit}${
+      category ? `&category=${encodeURIComponent(category)}` : ""
+    }${difficulty ? `&difficulty=${encodeURIComponent(difficulty)}` : ""}`,
+    {
+      headers: {
+        "X-Api-Key": API_KEY,
+      },
+    }
+  );
 
   const data = await res.json();
   console.log("API Response:", data);
