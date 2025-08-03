@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { fetchQuizQuestions } from "./utils/fetchQuiz";
 import { QuizQuestionWithAnswers } from "./types/Quiz";
+import QuizSetup from "./components/QuizSetup";
+import QuestionCard from "./components/QuestionCard";
 
 function App() {
   const [questions, setQuestions] = useState<QuizQuestionWithAnswers[]>([]);
@@ -26,19 +28,8 @@ function App() {
     "WordPress",
   ];
 
-  const escapeHTMLTags = (str: string) => {
-    return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  };
-
-  const decodeHTMLEntities = (str: string) => {
-    const textarea = document.createElement("textarea");
-    textarea.innerHTML = str;
-    return textarea.value;
-  };
-
   useEffect(() => {
     if (!gameStarted) return;
-
     const fetchData = async () => {
       const fetchedQuestions = await fetchQuizQuestions(
         category,
@@ -47,7 +38,6 @@ function App() {
       );
       setQuestions(fetchedQuestions);
     };
-
     fetchData();
   }, [gameStarted, category, difficulty, limit]);
 
@@ -71,113 +61,40 @@ function App() {
     setGameStarted(false);
   };
 
-  const getAnswerClass = (
-    answer: string,
-    correct: string,
-    selected: string | null
-  ) => {
-    if (!selected) return "";
-    if (answer !== selected) return "";
-    return answer === correct ? "correct" : "incorrect";
-  };
-
   return (
     <>
       {!gameStarted ? (
-        <div>
-          <h1>Quiz Setup</h1>
-
-          <label>Category:</label>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">Any</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-
-          <label>Difficulty:</label>
-          <select
-            value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value)}
-          >
-            <option value="">Any</option>
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-
-          <label>Number of Questions:</label>
-          <select
-            value={limit}
-            onChange={(e) => setLimit(Number(e.target.value))}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20}>20</option>
-          </select>
-
-          <button onClick={() => setGameStarted(true)}>Start Quiz</button>
-        </div>
+        <QuizSetup
+          category={category}
+          setCategory={setCategory}
+          difficulty={difficulty}
+          setDifficulty={setDifficulty}
+          limit={limit}
+          setLimit={setLimit}
+          categories={categories}
+          onStart={() => setGameStarted(true)}
+        />
+      ) : currentQuestionIndex < questions.length ? (
+        <QuestionCard
+          question={currentQuestion.question}
+          answers={currentQuestion.answers}
+          correctAnswer={currentQuestion.correct_answer}
+          selectedAnswer={selectAnswer}
+          onAnswerClick={handleAnswerClick}
+          onNextQuestion={handleNextQuestion}
+          isLastQuestion={currentQuestionIndex === questions.length - 1}
+          score={score}
+          total={questions.length}
+        />
       ) : (
-        <>
-          <h1>DevQuiz</h1>
+        // Final Results Screen
+        <div>
+          <h2>🎉 Quiz Complete!</h2>
           <p>
-            Score: {score} / {questions.length}
+            Final Score: {score} / {questions.length}
           </p>
           <button onClick={handleRestart}>🔄 Restart Quiz</button>
-
-          {currentQuestion && (
-            <div>
-              <h2>
-                {decodeHTMLEntities(escapeHTMLTags(currentQuestion.question))}
-              </h2>
-
-              {currentQuestion.answers.map((answer, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleAnswerClick(answer)}
-                  disabled={!!selectAnswer}
-                  className={getAnswerClass(
-                    answer,
-                    currentQuestion.correct_answer,
-                    selectAnswer
-                  )}
-                >
-                  {decodeHTMLEntities(escapeHTMLTags(answer))}
-                </button>
-              ))}
-
-              {selectAnswer && (
-                <div>
-                  <p>
-                    {selectAnswer === currentQuestion.correct_answer
-                      ? "✅ Correct!"
-                      : `❌ Incorrect. Correct answer: ${currentQuestion.correct_answer}`}
-                  </p>
-
-                  {currentQuestionIndex < questions.length - 1 && (
-                    <button onClick={handleNextQuestion}>
-                      Next Question →
-                    </button>
-                  )}
-
-                  {currentQuestionIndex === questions.length - 1 && (
-                    <p>
-                      🎉 You have completed the quiz! <br />
-                      Final Score: {score} / {questions.length}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </>
+        </div>
       )}
     </>
   );
