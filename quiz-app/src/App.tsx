@@ -30,6 +30,12 @@ function App() {
     return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
   };
 
+  const decodeHTMLEntities = (str: string) => {
+    const textarea = document.createElement("textarea");
+    textarea.innerHTML = str;
+    return textarea.value;
+  };
+
   useEffect(() => {
     if (!gameStarted) return;
 
@@ -47,7 +53,6 @@ function App() {
 
   const handleAnswerClick = (answer: string) => {
     setSelectAnswer(answer);
-
     if (answer === currentQuestion.correct_answer) {
       setScore((prev) => prev + 1);
     }
@@ -62,6 +67,8 @@ function App() {
     setSelectAnswer(null);
     setCurrentQuestionIndex(0);
     setScore(0);
+    setQuestions([]);
+    setGameStarted(false);
   };
 
   const getAnswerClass = (
@@ -103,6 +110,7 @@ function App() {
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
           </select>
+
           <label>Number of Questions:</label>
           <select
             value={limit}
@@ -123,11 +131,13 @@ function App() {
             Score: {score} / {questions.length}
           </p>
           <button onClick={handleRestart}>🔄 Restart Quiz</button>
+
           {currentQuestion && (
             <div>
-              <h2
-                dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
-              />
+              <h2>
+                {decodeHTMLEntities(escapeHTMLTags(currentQuestion.question))}
+              </h2>
+
               {currentQuestion.answers.map((answer, i) => (
                 <button
                   key={i}
@@ -138,8 +148,9 @@ function App() {
                     currentQuestion.correct_answer,
                     selectAnswer
                   )}
-                  dangerouslySetInnerHTML={{ __html: answer }}
-                />
+                >
+                  {decodeHTMLEntities(escapeHTMLTags(answer))}
+                </button>
               ))}
 
               {selectAnswer && (
