@@ -13,13 +13,13 @@ function App() {
   const [category, setCategory] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [limit, setLimit] = useState(5);
+  const [loading, setLoading] = useState(false);
 
   const currentQuestion = questions[currentQuestionIndex];
   const categories = [
     "Linux",
     "Bash",
     "Docker",
-    "Kubernetes",
     "SQL",
     "DevOps",
     "CMS",
@@ -31,12 +31,14 @@ function App() {
   useEffect(() => {
     if (!gameStarted) return;
     const fetchData = async () => {
+      setLoading(true);
       const fetchedQuestions = await fetchQuizQuestions(
         category,
         difficulty,
         limit
       );
       setQuestions(fetchedQuestions);
+      setLoading(false);
     };
     fetchData();
   }, [gameStarted, category, difficulty, limit]);
@@ -74,6 +76,8 @@ function App() {
           categories={categories}
           onStart={() => setGameStarted(true)}
         />
+      ) : loading ? (
+        <p>Loading questions...</p>
       ) : currentQuestionIndex < questions.length ? (
         <QuestionCard
           question={currentQuestion.question}
@@ -82,12 +86,12 @@ function App() {
           selectedAnswer={selectAnswer}
           onAnswerClick={handleAnswerClick}
           onNextQuestion={handleNextQuestion}
+          onRestartQuestion={handleRestart}
           isLastQuestion={currentQuestionIndex === questions.length - 1}
           score={score}
           total={questions.length}
         />
       ) : (
-        // Final Results Screen
         <div>
           <h2>🎉 Quiz Complete!</h2>
           <p>
