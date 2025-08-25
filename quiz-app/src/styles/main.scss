@@ -1,4 +1,4 @@
-@import "./variables";
-@import "./mixins";
-@import "./base";
-@import "./quiz";
+@use "./variables" as *;
+@use "./mixins";
+@use "./base";
+@use "./quiz";

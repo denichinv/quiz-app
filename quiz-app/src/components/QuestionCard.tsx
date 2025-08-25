@@ -11,6 +11,16 @@ interface QuestionCardProps {
   total: number;
 }
 
+const getAnswerClass = (
+  answer: string,
+  correct: string,
+  selected: string | null
+) => {
+  if (!selected) return "";
+  if (answer !== selected) return "";
+  return answer === correct ? "correct" : "incorrect";
+};
+
 const QuestionCard: React.FC<QuestionCardProps> = ({
   question,
   answers,
@@ -23,21 +33,27 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   score,
   total,
 }) => (
-  <div>
+  <div className="quiz-container">
     <p>
       Score: {score} / {total}
     </p>
-    <h2>{question}</h2>
-
-    {answers.map((answer, i) => (
-      <button
-        key={i}
-        onClick={() => onAnswerClick(answer)}
-        disabled={!!selectedAnswer}
-      >
-        {answer}
-      </button>
-    ))}
+    <h2 className="quiz-question">{question}</h2>
+    <div className="quiz-answers">
+      {answers.map((answer, i) => (
+        <button
+          key={i}
+          onClick={() => onAnswerClick(answer)}
+          disabled={!!selectedAnswer}
+          className={`quiz-button ${getAnswerClass(
+            answer,
+            correctAnswer,
+            selectedAnswer
+          )}`}
+        >
+          {answer}
+        </button>
+      ))}
+    </div>
 
     {selectedAnswer && (
       <>
