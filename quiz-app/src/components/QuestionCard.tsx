@@ -34,7 +34,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   total,
 }) => (
   <div className="quiz-container">
-    <p>
+    <p className="score">
       Score: {score} / {total}
     </p>
     <h2 className="quiz-question">{question}</h2>
