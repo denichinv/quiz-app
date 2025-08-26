@@ -19,36 +19,47 @@ const QuizSetup: React.FC<QuizSetupProps> = ({
   categories,
   onStart,
 }) => (
-  <div>
+  <div className="setup-container">
     <h1>Quiz Setup</h1>
 
-    <label>Category:</label>
-    <select value={category} onChange={(e) => setCategory(e.target.value)}>
-      <option value="">Any</option>
-      {categories.map((cat) => (
-        <option key={cat} value={cat}>
-          {cat}
-        </option>
-      ))}
-    </select>
+    <div className="setup-field">
+      <label>Category:</label>
+      <select value={category} onChange={(e) => setCategory(e.target.value)}>
+        <option value="">Any</option>
+        {categories.map((cat) => (
+          <option key={cat} value={cat}>
+            {cat}
+          </option>
+        ))}
+      </select>
+    </div>
 
-    <label>Difficulty:</label>
-    <select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
-      <option value="">Any</option>
-      <option value="easy">Easy</option>
-      <option value="medium">Medium</option>
-      <option value="hard">Hard</option>
-    </select>
+    <div className="setup-field">
+      <label>Difficulty:</label>
+      <select
+        value={difficulty}
+        onChange={(e) => setDifficulty(e.target.value)}
+      >
+        <option value="">Any</option>
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
 
-    <label>Number of Questions:</label>
-    <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
-      <option value={5}>5</option>
-      <option value={10}>10</option>
-      <option value={15}>15</option>
-      <option value={20}>20</option>
-    </select>
+    <div className="setup-field">
+      <label>Number of Questions:</label>
+      <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
+        <option value={5}>5</option>
+        <option value={10}>10</option>
+        <option value={15}>15</option>
+        <option value={20}>20</option>
+      </select>
+    </div>
 
-    <button onClick={onStart}>Start Quiz</button>
+    <button onClick={onStart} className="setup-button">
+      Start Quiz
+    </button>
   </div>
 );
 
