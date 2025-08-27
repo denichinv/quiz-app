@@ -77,7 +77,9 @@ function App() {
           onStart={() => setGameStarted(true)}
         />
       ) : loading ? (
-        <p>Loading questions...</p>
+        <div className="loading-screen">
+          <p>Loading questions...</p>
+        </div>
       ) : currentQuestionIndex < questions.length ? (
         <QuestionCard
           question={currentQuestion.question}
