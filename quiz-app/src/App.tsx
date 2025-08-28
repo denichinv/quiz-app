@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchQuizQuestions } from "./utils/fetchQuiz";
 import { QuizQuestionWithAnswers } from "./types/Quiz";
 import QuizSetup from "./components/QuizSetup";
 import QuestionCard from "./components/QuestionCard";
+import QuizLoading from "./components/QuizLoading";
+import QuizComplete from "./components/QuizComplete";
 
 function App() {
   const [questions, setQuestions] = useState<QuizQuestionWithAnswers[]>([]);
@@ -77,9 +79,7 @@ function App() {
           onStart={() => setGameStarted(true)}
         />
       ) : loading ? (
-        <div className="loading-screen">
-          <p>Loading questions...</p>
-        </div>
+        <QuizLoading />
       ) : currentQuestionIndex < questions.length ? (
         <QuestionCard
           question={currentQuestion.question}
@@ -94,13 +94,11 @@ function App() {
           total={questions.length}
         />
       ) : (
-        <div className="quiz-complete">
-          <h2>🎉 Quiz Complete!</h2>
-          <p>
-            Final Score: {score} / {questions.length}
-          </p>
-          <button onClick={handleRestart}>🔄 Restart Quiz</button>
-        </div>
+        <QuizComplete
+          correct={score}
+          questionsCount={questions.length}
+          onRestart={handleRestart}
+        />
       )}
     </>
   );
