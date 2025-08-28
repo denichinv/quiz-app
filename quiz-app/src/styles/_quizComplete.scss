@@ -1,0 +1,27 @@
+.quiz-complete {
+  margin-top: 2rem;
+  padding: 2rem;
+  text-align: center;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  button {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2 ease;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+}

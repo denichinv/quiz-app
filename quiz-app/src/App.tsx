@@ -94,7 +94,7 @@ function App() {
           total={questions.length}
         />
       ) : (
-        <div>
+        <div className="quiz-complete">
           <h2>🎉 Quiz Complete!</h2>
           <p>
             Final Score: {score} / {questions.length}
