@@ -1,27 +1,30 @@
+@use "./variables" as var;
+
 .quiz-complete {
-  margin-top: 2rem;
-  padding: 2rem;
+  margin-top: var.$spacing-xl;
+  padding: var.$spacing-xl;
   text-align: center;
-  background-color: #f4f4f4;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: var.$background-light;
+  border-radius: var.$border-radius-md;
+  box-shadow: var.$box-shadow-light;
 
   p {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    font-weight: 500;
+    font-size: var.$font-size-lg;
+    margin-bottom: var.$spacing-md;
+    font-weight: var.$font-weight-medium;
   }
+
   button {
-    margin-top: 1rem;
+    margin-top: var.$spacing-md;
     padding: 0.6rem 1.2rem;
-    background-color: #007bff;
+    background-color: var.$primary-blue;
     color: white;
     border: none;
     cursor: pointer;
-    transition: background-color 0.2 ease;
+    transition: background-color var.$transition-fast;
 
     &:hover {
-      background-color: #0056b3;
+      background-color: var.$primary-blue-hover;
     }
   }
 }

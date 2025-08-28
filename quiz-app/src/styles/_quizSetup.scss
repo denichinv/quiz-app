@@ -1,48 +1,51 @@
+@use "./variables" as var;
+
 .setup-container {
-  max-width: 500px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: var.$max-width-sm;
+  margin: var.$spacing-xl auto;
+  padding: var.$spacing-lg;
+  background: var.$card-background;
+  border-radius: var.$border-radius-lg;
+  box-shadow: var.$box-shadow;
   text-align: center;
 }
 
 h1 {
-  margin-bottom: 2rem;
-  font-size: 2rem;
+  margin-bottom: var.$spacing-xl;
+  font-size: var.$font-size-xxxl;
 }
 
 .setup-field {
-  margin-bottom: 1.5rem;
+  margin-bottom: var.$spacing-lg;
   text-align: left;
+
   label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
+    margin-bottom: var.$spacing-sm;
+    font-weight: var.$font-weight-semibold;
   }
 
   select {
     width: 100%;
-    padding: 0.5rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
+    padding: var.$spacing-sm;
+    border-radius: var.$border-radius-md;
+    border: 1px solid var.$border-color;
+    font-size: var.$font-size-sm;
   }
 }
 
 .setup-button {
-  background-color: #0066ff;
+  background-color: var.$accent-blue;
   color: #fff;
-  font-size: 1.1rem;
-  font-weight: bold;
+  font-size: var.$font-size-md;
+  font-weight: var.$font-weight-bold;
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var.$border-radius-md;
   cursor: pointer;
-  transition: background-color 0.3 ease;
+  transition: background-color var.$transition-medium;
 
   &:hover {
-    background-color: #004ecc;
+    background-color: var.$accent-blue-hover;
   }
 }
