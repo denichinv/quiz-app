@@ -57,11 +57,13 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 
     {selectedAnswer && (
       <>
-        <p>
-          {selectedAnswer === correctAnswer
-            ? "✅ Correct!"
-            : `❌ Incorrect. Correct answer: ${correctAnswer}`}
-        </p>
+        <div className="feedback">
+          <p>
+            {selectedAnswer === correctAnswer
+              ? "✅ Correct!"
+              : `❌ Incorrect. Correct answer: ${correctAnswer}`}
+          </p>
+        </div>
 
         <button onClick={onRestartQuestion}>Restart Quiz</button>
 
