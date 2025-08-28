@@ -1,8 +1,6 @@
 // Colors
 $primary-blue: #007bff;
-$primary-blue-hover: #0056b3;
 $accent-blue: #0066ff;
-$accent-blue-hover: #004ecc;
 
 $success-color: #4caf50;
 $success-light: #c8e6c9;
@@ -14,10 +12,11 @@ $background-lighter: #f9f9f9;
 $card-background: #ffffff;
 $text-color: #333;
 $text-secondary: #222;
+$text-color-white: #fff;
 $border-color: #ccc;
 $border-color-light: rgba(48, 46, 46, 0.246);
 
-$button-hover: #ddd;
+$button-hover-base: #ddd;
 $loading-gray: lightgray;
 
 // Spacing

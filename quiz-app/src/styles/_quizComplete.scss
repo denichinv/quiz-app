@@ -1,30 +1,24 @@
 @use "./variables" as var;
+@use "./mixins" as mix;
 
 .quiz-complete {
-  margin-top: var.$spacing-xl;
-  padding: var.$spacing-xl;
+  @include mix.card(
+    $bg-color: var.$background-light,
+    $border-radius: var.$border-radius-md,
+    $shadow: var.$box-shadow-light
+  );
   text-align: center;
-  background-color: var.$background-light;
-  border-radius: var.$border-radius-md;
-  box-shadow: var.$box-shadow-light;
 
   p {
-    font-size: var.$font-size-lg;
-    margin-bottom: var.$spacing-md;
-    font-weight: var.$font-weight-medium;
+    @include mix.text-style(
+      $size: var.$font-size-lg,
+      $weight: var.$font-weight-medium,
+      $margin-bottom: var.$spacing-md
+    );
   }
 
   button {
+    @include mix.button($padding: 0.6rem 1.2rem);
     margin-top: var.$spacing-md;
-    padding: 0.6rem 1.2rem;
-    background-color: var.$primary-blue;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background-color var.$transition-fast;
-
-    &:hover {
-      background-color: var.$primary-blue-hover;
-    }
   }
 }

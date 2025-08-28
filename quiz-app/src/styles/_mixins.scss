@@ -1,0 +1,145 @@
+@use "./variables" as var;
+
+// Button mixin with customizable properties
+@mixin button(
+  $bg-color: var.$primary-blue,
+  $text-color: white,
+  $padding: 0.75rem 1.5rem,
+  $border-radius: var.$border-radius-md,
+  $font-size: var.$font-size-sm,
+  $transition: var.$transition-fast,
+  $hover-darken: 10%
+) {
+  background-color: $bg-color;
+  color: $text-color;
+  padding: $padding;
+  border: none;
+  border-radius: $border-radius;
+  font-size: $font-size;
+  cursor: pointer;
+  transition: background-color $transition;
+
+  &:hover {
+    background-color: darken($bg-color, $hover-darken);
+  }
+
+  &:disabled {
+    opacity: var.$opacity-disabled;
+    cursor: not-allowed;
+  }
+}
+
+// Card/container mixin
+@mixin card(
+  $padding: var.$spacing-xl,
+  $margin: var.$spacing-xl auto,
+  $bg-color: var.$card-background,
+  $border-radius: var.$border-radius-lg,
+  $shadow: var.$box-shadow,
+  $max-width: null
+) {
+  padding: $padding;
+  margin: $margin;
+  background: $bg-color;
+  border-radius: $border-radius;
+  box-shadow: $shadow;
+
+  @if $max-width {
+    max-width: $max-width;
+  }
+}
+
+// Flex center mixin
+@mixin flex-center($direction: row, $gap: null) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @if $direction != row {
+    flex-direction: $direction;
+  }
+
+  @if $gap {
+    gap: $gap;
+  }
+}
+
+// Text styling mixin
+@mixin text-style(
+  $size: var.$font-size-sm,
+  $weight: normal,
+  $color: var.$text-color,
+  $align: left,
+  $margin-bottom: 0
+) {
+  font-size: $size;
+  font-weight: $weight;
+  color: $color;
+  text-align: $align;
+
+  @if $margin-bottom != 0 {
+    margin-bottom: $margin-bottom;
+  }
+}
+
+// Input/Select styling mixin
+@mixin form-input(
+  $border-color: var.$border-color,
+  $border-radius: var.$border-radius-md,
+  $padding: var.$spacing-sm,
+  $font-size: var.$font-size-sm
+) {
+  width: 100%;
+  padding: $padding;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  font-size: $font-size;
+
+  &:focus {
+    outline: none;
+    border-color: darken($border-color, 20%);
+    box-shadow: 0 0 0 2px rgba(darken($border-color, 20%), 0.2);
+  }
+}
+
+// Answer button states mixin
+@mixin answer-state($bg-color, $text-color: white) {
+  background-color: $bg-color;
+  color: $text-color;
+
+  &:hover {
+    background-color: darken($bg-color, 5%);
+  }
+}
+
+// Loading animation mixin
+@mixin loading-animation($duration: 1.5s) {
+  animation: pulse $duration infinite;
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
+// Responsive breakpoints mixin
+@mixin breakpoint($size) {
+  @if $size == mobile {
+    @media (max-width: 768px) {
+      @content;
+    }
+  } @else if $size == tablet {
+    @media (min-width: 769px) and (max-width: 1024px) {
+      @content;
+    }
+  } @else if $size == desktop {
+    @media (min-width: 1025px) {
+      @content;
+    }
+  }
+}

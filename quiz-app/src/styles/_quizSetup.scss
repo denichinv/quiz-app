@@ -1,18 +1,16 @@
 @use "./variables" as var;
+@use "./mixins" as mix;
 
 .setup-container {
-  max-width: var.$max-width-sm;
-  margin: var.$spacing-xl auto;
-  padding: var.$spacing-lg;
-  background: var.$card-background;
-  border-radius: var.$border-radius-lg;
-  box-shadow: var.$box-shadow;
+  @include mix.card($max-width: var.$max-width-sm);
   text-align: center;
 }
 
 h1 {
-  margin-bottom: var.$spacing-xl;
-  font-size: var.$font-size-xxxl;
+  @include mix.text-style(
+    $size: var.$font-size-xxxl,
+    $margin-bottom: var.$spacing-xl
+  );
 }
 
 .setup-field {
@@ -20,32 +18,23 @@ h1 {
   text-align: left;
 
   label {
+    @include mix.text-style(
+      $weight: var.$font-weight-semibold,
+      $margin-bottom: var.$spacing-sm
+    );
     display: block;
-    margin-bottom: var.$spacing-sm;
-    font-weight: var.$font-weight-semibold;
   }
 
   select {
-    width: 100%;
-    padding: var.$spacing-sm;
-    border-radius: var.$border-radius-md;
-    border: 1px solid var.$border-color;
-    font-size: var.$font-size-sm;
+    @include mix.form-input();
   }
 }
 
 .setup-button {
-  background-color: var.$accent-blue;
-  color: #fff;
-  font-size: var.$font-size-md;
+  @include mix.button(
+    $bg-color: var.$accent-blue,
+    $font-size: var.$font-size-md,
+    $transition: var.$transition-medium
+  );
   font-weight: var.$font-weight-bold;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: var.$border-radius-md;
-  cursor: pointer;
-  transition: background-color var.$transition-medium;
-
-  &:hover {
-    background-color: var.$accent-blue-hover;
-  }
 }
