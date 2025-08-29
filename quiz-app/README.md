@@ -1,69 +1,75 @@
-# React + TypeScript + Vite
+# DevQuiz 🎯
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A developer-focused quiz app built with **React**, **TypeScript**, **Vite**, and **SASS**.  
+Choose your category, set the difficulty, and test your knowledge with random multiple-choice questions powered by the [QuizAPI.io](https://quizapi.io/).
 
-Currently, two official plugins are available:
+🔗 **Live Demo**: [dev-quiz-v.netlify.app](https://dev-quiz-v.netlify.app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🧠 Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🎮 Custom quizzes: select category, difficulty & number of questions  
+- ✅ Instant feedback on answer selection  
+- 🧾 Score tracking & summary at the end  
+- 🎨 Modular SCSS styling using SASS  
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 📦 Tech Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- ⚛️ React + TypeScript  
+- ⚡ Vite  
+- 🎨 SASS (SCSS Modules)  
+- 🔌 [QuizAPI.io](https://quizapi.io/)  
+- ☁️ Netlify for deployment  
+
+---
+
+## 🚧 Getting Started
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Create a .env file with your API key
+touch .env
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+VITE_REACT_APP_QUIZ_API_KEY=your_api_key_here
+```
+
+```bash
+# 3. Start development server
+npm run dev
+```
+
+---
+
+## 🔐 Environment Variables
+
+| Key                           | Description                     |
+|------------------------------|---------------------------------|
+| `VITE_REACT_APP_QUIZ_API_KEY` | Your QuizAPI.io API key         |
+
+---
+
+## 📁 Folder Structure
+
+```
+src/
+├── components/       # Reusable UI components
+├── styles/           # SCSS partials and main.scss
+├── types/            # TypeScript types
+├── utils/            # Helper functions (e.g., fetchQuiz)
+├── App.tsx           # Root component
+└── main.tsx          # Entry point
+```
+
+---
+
+## 👨‍💻 Author
+
+Made with 💻 by **Vilizar Denichin**  
+[🔗 Portfolio](https://vilizardenichin.netlify.app) | [GitHub](https://github.com/denichinv) | [LinkedIn](https://linkedin.com/in/vilizar-denichin)
