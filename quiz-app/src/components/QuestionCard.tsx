@@ -63,13 +63,13 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               ? "✅ Correct!"
               : `❌ Incorrect. Correct answer: ${correctAnswer}`}
           </p>
+
+          <button onClick={onRestartQuestion}>Restart Quiz</button>
+
+          <button onClick={onNextQuestion}>
+            {isLastQuestion ? "Finish Quiz" : "Next Question →"}
+          </button>
         </div>
-
-        <button onClick={onRestartQuestion}>Restart Quiz</button>
-
-        <button onClick={onNextQuestion}>
-          {isLastQuestion ? "Finish Quiz" : "Next Question →"}
-        </button>
       </>
     )}
   </div>
