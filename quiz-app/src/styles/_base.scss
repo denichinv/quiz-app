@@ -13,7 +13,9 @@ body {
   font-size: var.$font-size-sm;
   line-height: 1.5;
   color: var.$text-color;
-  background-color: var.$background-lighter;
+  background: url("../assets/coolbackgrounds-topography-micron.svg") no-repeat
+    center center fixed;
+  background-size: cover;
 }
 
 h1,

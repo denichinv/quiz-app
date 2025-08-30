@@ -13,7 +13,8 @@
     @include mix.text-style(
       $size: var.$font-size-lg,
       $weight: var.$font-weight-medium,
-      $margin-bottom: var.$spacing-md
+      $margin-bottom: var.$spacing-md,
+      $align: center
     );
   }
 
