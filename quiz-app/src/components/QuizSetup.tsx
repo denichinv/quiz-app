@@ -23,8 +23,12 @@ const QuizSetup: React.FC<QuizSetupProps> = ({
     <h1>Quiz Setup</h1>
 
     <div className="setup-field">
-      <label>Category:</label>
-      <select value={category} onChange={(e) => setCategory(e.target.value)}>
+      <label htmlFor="category-select">Category:</label>
+      <select
+        id="category-select"
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+      >
         <option value="">Any</option>
         {categories.map((cat) => (
           <option key={cat} value={cat}>
@@ -35,8 +39,9 @@ const QuizSetup: React.FC<QuizSetupProps> = ({
     </div>
 
     <div className="setup-field">
-      <label>Difficulty:</label>
+      <label htmlFor="difficulty-select">Difficulty:</label>
       <select
+        id="difficulty-select"
         value={difficulty}
         onChange={(e) => setDifficulty(e.target.value)}
       >
@@ -48,8 +53,12 @@ const QuizSetup: React.FC<QuizSetupProps> = ({
     </div>
 
     <div className="setup-field">
-      <label>Number of Questions:</label>
-      <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
+      <label htmlFor="limit-select">Number of Questions:</label>
+      <select
+        id="limit-select"
+        value={limit}
+        onChange={(e) => setLimit(Number(e.target.value))}
+      >
         <option value={5}>5</option>
         <option value={10}>10</option>
         <option value={15}>15</option>
