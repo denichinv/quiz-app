@@ -3,13 +3,11 @@ import { describe, test, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 
 describe("QuizSetup component tests", () => {
-  // Mock functions to track if props functions are called
   const mockSetCategory = vi.fn();
   const mockSetDifficulty = vi.fn();
   const mockSetLimit = vi.fn();
   const mockOnStart = vi.fn();
 
-  // Helper function to render component with default props
   const renderQuizSetup = (props = {}) => {
     return render(
       <QuizSetup
@@ -26,7 +24,6 @@ describe("QuizSetup component tests", () => {
     );
   };
 
-  // Clear all mocks before each test
   beforeEach(() => {
     vi.clearAllMocks();
   });
