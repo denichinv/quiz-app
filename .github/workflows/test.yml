@@ -12,7 +12,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: quiz-app/quiz-app
+        working-directory: quiz-app
 
     steps:
       - name: Checkout repository
