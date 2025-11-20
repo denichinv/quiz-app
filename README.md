@@ -9,20 +9,20 @@ Choose your category, set the difficulty, and test your knowledge with random mu
 
 ## 🧠 Features
 
-- 🎮 Custom quizzes: select category, difficulty & number of questions  
-- ✅ Instant feedback on answer selection  
-- 🧾 Score tracking & summary at the end  
-- 🎨 Modular SCSS styling using SASS  
+- 🎮 Custom quizzes: select category, difficulty & number of questions
+- ✅ Instant feedback on answer selection
+- 🧾 Score tracking & summary at the end
+- 🎨 Modular SCSS styling using SASS
 
 ---
 
 ## 📦 Tech Stack
 
-- ⚛️ React + TypeScript  
-- ⚡ Vite  
-- 🎨 SASS (SCSS Modules)  
-- 🔌 [QuizAPI.io](https://quizapi.io/)  
-- ☁️ Netlify for deployment  
+- ⚛️ React + TypeScript
+- ⚡ Vite
+- 🎨 SASS (SCSS Modules)
+- 🔌 [QuizAPI.io](https://quizapi.io/)
+- ☁️ Netlify for deployment
 
 ---
 
@@ -49,9 +49,9 @@ npm run dev
 
 ## 🔐 Environment Variables
 
-| Key                           | Description                     |
-|------------------------------|---------------------------------|
-| `VITE_REACT_APP_QUIZ_API_KEY` | Your QuizAPI.io API key         |
+| Key                           | Description             |
+| ----------------------------- | ----------------------- |
+| `VITE_REACT_APP_QUIZ_API_KEY` | Your QuizAPI.io API key |
 
 ---
 
