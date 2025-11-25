@@ -52,4 +52,28 @@ describe("App integration test", () => {
     expect(screen.getByText("A library")).toBeInTheDocument();
     expect(screen.getByText("A framework")).toBeInTheDocument();
   });
+  test("should increment score when correct answer is selected", async () => {
+    vi.mocked(fetchQuizQuestions).mockResolvedValue([
+      {
+        question: "What is React?",
+        correct_answer: "A library",
+        incorrect_answers: ["A framework"],
+        answers: ["A library", "A framework"],
+      },
+    ]);
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Start Quiz" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("What is React?")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Score: 0 / 1")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("A library"));
+
+    expect(screen.getByText("Score: 1 / 1")).toBeInTheDocument();
+  });
 });
