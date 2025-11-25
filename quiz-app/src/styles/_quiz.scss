@@ -70,9 +70,9 @@ button {
 .loading-screen {
   @include mix.flex-center(row);
   @include mix.text-style(
-    $size: var.$font-size-xxl,
+    $size: var.$font-size-xxxl,
     $weight: var.$font-weight-bold,
-    $color: var.$text-color
+    $color: var.$text-color-white
   );
   @include mix.loading-animation();
   min-height: 50vh;
