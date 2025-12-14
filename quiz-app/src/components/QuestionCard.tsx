@@ -37,11 +37,14 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
     <p className="score">
       Score: {score} / {total}
     </p>
-    <h2 className="quiz-question">{question}</h2>
+    <h2 className="quiz-question" data-testid="quiz-question">
+      {question}
+    </h2>
     <div className="quiz-answers">
       {answers.map((answer, i) => (
         <button
           key={i}
+          data-testid="answer-option"
           onClick={() => onAnswerClick(answer)}
           disabled={!!selectedAnswer}
           className={`quiz-button ${getAnswerClass(
