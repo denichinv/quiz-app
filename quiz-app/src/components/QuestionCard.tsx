@@ -44,7 +44,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
       {answers.map((answer, i) => (
         <button
           key={i}
-          data-testid="answer-option"
+          data-testid={`answer-${i}`}
           onClick={() => onAnswerClick(answer)}
           disabled={!!selectedAnswer}
           className={`quiz-button ${getAnswerClass(

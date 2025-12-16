@@ -11,9 +11,13 @@ test.describe("home page and start quiz", () => {
     await expect(page.getByText(/number of questions:/i)).toBeVisible();
     await expect(page.getByRole("button")).toContainText(/start quiz/i);
   });
-  test("start quiz shows first question", async ({ page }) => {
+  test("start quiz show questions", async ({ page }) => {
     const button = page.getByRole("button", { name: "Start Quiz" });
     await button.click();
     await expect(page.getByText(/Score:/i)).toBeVisible();
+    await expect(page.getByTestId("quiz-question")).toBeVisible();
+    for (let i = 0; i < 4; i++) {
+      await expect(page.getByTestId(`answer-${i}`)).toBeVisible();
+    }
   });
 });
