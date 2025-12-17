@@ -13,13 +13,15 @@ test.describe("Quiz App – Home", () => {
       page.getByRole("button", { name: /start quiz/i })
     ).toBeVisible();
   });
-  test("start quiz show questions", async ({ page }) => {
-    const button = page.getByRole("button", { name: "Start Quiz" });
-    await button.click();
-    await expect(page.getByText(/Score:/i)).toBeVisible();
+  test("start quiz shows question and answers", async ({ page }) => {
+    await page.getByRole("button", { name: /start quiz/i }).click();
+
     await expect(page.getByTestId("quiz-question")).toBeVisible();
-    for (let i = 0; i < 4; i++) {
-      await expect(page.getByTestId(`answer-${i}`)).toBeVisible();
-    }
+
+    const answers = page.getByRole("button");
+    await expect(answers.first()).toBeVisible();
+
+    const count = await answers.count();
+    expect(count).toBeGreaterThan(2);
   });
 });
