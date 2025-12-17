@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("home page and start quiz", () => {
+test.describe("Quiz App – Home", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("https://dev-quiz-v.netlify.app/");
   });
@@ -9,7 +9,9 @@ test.describe("home page and start quiz", () => {
     await expect(page.getByText(/category:/i)).toBeVisible();
     await expect(page.getByText(/difficulty:/i)).toBeVisible();
     await expect(page.getByText(/number of questions:/i)).toBeVisible();
-    await expect(page.getByRole("button")).toContainText(/start quiz/i);
+    await expect(
+      page.getByRole("button", { name: /start quiz/i })
+    ).toBeVisible();
   });
   test("start quiz show questions", async ({ page }) => {
     const button = page.getByRole("button", { name: "Start Quiz" });
