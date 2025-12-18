@@ -1,24 +1,26 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Quiz App - Quiz flow", () => {
+test.describe("Quiz App – Quiz flow", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("https://dev-quiz-v.netlify.app/");
-    const startButton = page.getByRole("button", { name: "Start Quiz" });
-    await startButton.click();
+    await page.getByRole("button", { name: /start quiz/i }).click();
+    await expect(page.getByTestId("quiz-question")).toBeVisible();
   });
 
-  test("should select an answer moves to the next question", async ({
-    page,
-  }) => {
-    await expect(page.getByRole("button")).toHaveCount(4);
+  test("answer -> feedback -> next question", async ({ page }) => {
+    const firstQuestion = await page.getByTestId("quiz-question").textContent();
+    const answersCount = await page.getByRole("button").count();
+    await page.getByTestId("answer-0").click();
 
-    await page.getByRole("button")[0].click();
+    for (let i = 0; i < answersCount; i++) {
+      await expect(page.getByTestId(`answer-${i}`)).toBeDisabled();
+    }
 
-    await expect(page.getByTestId(`answer-1`)).toBeDisabled();
-    await expect(page.getByTestId(`answer-2`)).toBeDisabled();
-    await expect(page.getByTestId(`answer-3`)).toBeDisabled();
-    await expect(page.getByTestId(`answer-4`)).toBeDisabled();
+    await expect(page.getByText(/correct|incorrect/i)).toBeVisible();
+    await page.getByRole("button", { name: /next question/i }).click();
 
-    await expect(page.getByRole("button")).toHaveCount(6);
+    await expect(page.getByTestId("quiz-question")).not.toHaveText(
+      firstQuestion ?? ""
+    );
   });
 });
