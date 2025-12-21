@@ -14,37 +14,42 @@ Choose your category, set the difficulty, and test your knowledge with random mu
 
 ## 🧠 Features
 
-- 🎮 Custom quizzes: select category, difficulty & number of questions  
-- ✅ Instant feedback on answer selection  
-- 🧾 Score tracking & summary at the end  
-- 🎨 Modular SCSS styling using SASS  
+- 🎮 Custom quizzes (category, difficulty, question count)
+- ✅ Instant feedback on answer selection
+- 🧾 Score tracking and final results screen
+- 🔁 Restart quiz functionality
+- 🎨 Modular styling with SCSS (SASS)
 
 ---
 
 ## 📦 Tech Stack
 
-- ⚛️ React + TypeScript  
-- ⚡ Vite  
-- 🎨 SASS (SCSS Modules)  
-- 🔌 [QuizAPI.io](https://quizapi.io/)  
-- ☁️ Netlify for deployment  
+- ⚛️ React + TypeScript
+- ⚡ Vite
+- 🎨 SASS (SCSS Modules)
+- 🔌 QuizAPI.io (external quiz data)
+- ☁️ Netlify (deployment)
 - 🧪 Vitest + React Testing Library
+- 🧪 Playwright (End-to-End testing)
 
 ---
 
-## 🚧 Getting Started
+## 🚀 Getting Started
+
 ```bash
-# 1. Install dependencies
+# Install dependencies
 npm install
 
-# 2. Create a .env file with your API key
+# Create environment file
 touch .env
 ```
+
 ```env
 VITE_REACT_APP_QUIZ_API_KEY=your_api_key_here
 ```
+
 ```bash
-# 3. Start development server
+# Start development server
 npm run dev
 ```
 
@@ -52,51 +57,101 @@ npm run dev
 
 ## 🧪 Testing
 
-This project includes comprehensive tests with **90%+ code coverage**.
+This project includes both **unit/integration tests** and **end-to-end (E2E) tests**.
+
+### Unit & Integration Tests
+
+Written using **Vitest** and **React Testing Library**.
+
 ```bash
-# Run all tests
+# Run tests
 npm run test
 
-# Run tests with coverage report
+# Run tests with coverage
 npm run test -- --coverage
 
-# Run tests in watch mode
+# Watch mode
 npm run test -- --watch
 ```
 
-### Test Coverage
-- ✅ **Components**: 100% coverage (QuizSetup, QuestionCard, QuizComplete, QuizLoading)
-- ✅ **Utilities**: 100% coverage (fetchQuiz, shuffleArray)
-- ✅ **Integration**: App.tsx with state management and user flows
-- 📊 **Overall**: 90.12% statements, 87.5% branches
+**Coverage highlights:**
+
+- Components: 100%
+- Utilities: 100%
+- Integration (App state & user flows)
+- Overall coverage: ~90%
+
+---
+
+### End-to-End (E2E) Tests
+
+E2E tests are written with **Playwright** and run against the **deployed Netlify application**.
+
+They validate the main user journeys:
+
+- App loads successfully
+- Quiz can be started
+- Questions and answers render
+- Quiz can be completed
+- Results screen is displayed
+- Quiz can be restarted
+
+```bash
+# Run E2E tests
+npx playwright test
+
+# Run with a single worker (recommended to reduce API rate limits)
+npx playwright test --workers=1
+
+# Open Playwright HTML report
+npx playwright show-report
+```
+
+#### ⚠️ Note on API limits
+
+E2E tests rely on a third-party quiz API.  
+If tests are run repeatedly, occasional **HTTP 429 (rate limit)** responses may occur.  
+In such cases, re-running later or using `--workers=1` is recommended.
 
 ---
 
 ## 🔐 Environment Variables
 
-| Key                           | Description                     |
-|------------------------------|---------------------------------|
-| `VITE_REACT_APP_QUIZ_API_KEY` | Your QuizAPI.io API key         |
+| Key                           | Description        |
+| ----------------------------- | ------------------ |
+| `VITE_REACT_APP_QUIZ_API_KEY` | QuizAPI.io API key |
 
 ---
 
 ## 📁 Folder Structure
+
 ```
 src/
-├── components/       # Reusable UI components
-│   ├── *.test.tsx    # Component tests
-├── styles/           # SCSS partials and main.scss
-├── types/            # TypeScript types
-├── utils/            # Helper functions
-│   ├── *.test.ts     # Utility tests
-├── App.tsx           # Root component
-├── App.test.tsx      # Integration tests
-└── main.tsx          # Entry point
+├── components/
+│   ├── *.test.tsx
+├── styles/
+├── types/
+├── utils/
+│   ├── *.test.ts
+├── App.tsx
+├── App.test.tsx
+└── main.tsx
+```
+
+```
+e2e/
+├── quiz-app-home.spec.ts
+├── quiz-app-quiz.spec.ts
+└── quiz-app-results.spec.ts
 ```
 
 ---
 
 ## 👨‍💻 Author
 
-Made with 💻 by **Vilizar Denichin**  
-[🔗 Portfolio](https://vilizardenichin.netlify.app) | [GitHub](https://github.com/denichinv) | [LinkedIn](https://linkedin.com/in/vilizar-denichin)
+**Vilizar Denichin**  
+Frontend Developer (React & TypeScript)
+
+🔗 Portfolio: https://vilizardenichin.netlify.app  
+🔗 GitHub: https://github.com/denichinv  
+🔗 LinkedIn: https://linkedin.com/in/vilizar-denichin
