@@ -1,5 +1,21 @@
 import type { Handler, HandlerResponse } from "@netlify/functions";
 
+type QuizApiAnswer = {
+  text: string;
+  isCorrect: boolean;
+};
+
+type QuizApiQuestion = {
+  text: string;
+  answers: QuizApiAnswer[];
+};
+
+type QuizApiResponse = {
+  success: boolean;
+  data?: QuizApiQuestion[];
+  error?: string;
+};
+
 const jsonResponse = (statusCode: number, body: unknown): HandlerResponse => {
   return {
     statusCode,
@@ -7,6 +23,37 @@ const jsonResponse = (statusCode: number, body: unknown): HandlerResponse => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
+  };
+};
+
+const answerKeys = [
+  "answer_a",
+  "answer_b",
+  "answer_c",
+  "answer_d",
+  "answer_e",
+  "answer_f",
+] as const;
+
+const normalizeQuestion = (question: QuizApiQuestion) => {
+  const answers = Object.fromEntries(
+    answerKeys.map((key, index) => [
+      key,
+      question.answers[index]?.text ?? null,
+    ]),
+  );
+
+  const correctAnswers = Object.fromEntries(
+    answerKeys.map((key, index) => [
+      `${key}_correct`,
+      question.answers[index]?.isCorrect ? "true" : "false",
+    ]),
+  );
+
+  return {
+    question: question.text,
+    answers,
+    correct_answers: correctAnswers,
   };
 };
 
@@ -23,7 +70,6 @@ export const handler: Handler = async (event) => {
 
   const params = new URLSearchParams({
     limit,
-    api_key: apiKey,
   });
 
   if (category) {
@@ -39,14 +85,28 @@ export const handler: Handler = async (event) => {
       `https://quizapi.io/api/v1/questions?${params.toString()}`,
       {
         headers: {
-          "X-Api-Key": apiKey,
+          Authorization: `Bearer ${apiKey}`,
         },
       },
     );
 
-    const data = await response.json();
+    const data = (await response.json()) as QuizApiResponse;
 
-    return jsonResponse(response.status, data);
+    if (!response.ok) {
+      return jsonResponse(response.status, {
+        error: data.error ?? "Failed to fetch quiz questions",
+      });
+    }
+
+    if (!Array.isArray(data.data)) {
+      return jsonResponse(502, {
+        error: "Unexpected QuizAPI response format",
+      });
+    }
+
+    const normalizedQuestions = data.data.map(normalizeQuestion);
+
+    return jsonResponse(200, normalizedQuestions);
   } catch (error) {
     console.error("QuizAPI request failed:", error);
 
