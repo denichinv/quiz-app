@@ -11,7 +11,7 @@ const jsonResponse = (statusCode: number, body: unknown): HandlerResponse => {
 };
 
 export const handler: Handler = async (event) => {
-  const apiKey = process.env.QUIZ_API_KEY;
+  const apiKey = process.env.QUIZ_API_KEY?.trim();
 
   if (!apiKey) {
     return jsonResponse(500, { error: "Quiz API key is missing" });
@@ -23,6 +23,7 @@ export const handler: Handler = async (event) => {
 
   const params = new URLSearchParams({
     limit,
+    api_key: apiKey,
   });
 
   if (category) {
