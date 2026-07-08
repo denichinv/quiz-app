@@ -16,37 +16,63 @@ function App() {
   const [difficulty, setDifficulty] = useState("");
   const [limit, setLimit] = useState(5);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const currentQuestion = questions[currentQuestionIndex];
+
   const categories = [
-    "Linux",
-    "Bash",
-    "Docker",
+    "JavaScript",
+    "TypeScript",
+    "React",
+    "CSS/HTML",
     "SQL",
+    "Database",
+    "Git",
+    "GitHub Actions",
+    "Docker",
+    "Kubernetes",
+    "AWS",
     "DevOps",
-    "CMS",
-    "PHP",
-    "HTML",
-    "WordPress",
+    "Cybersecurity",
+    "Web Security",
+    "Algorithms",
+    "Regular Expressions",
+    "Python",
   ];
 
   useEffect(() => {
     if (!gameStarted) return;
+
     const fetchData = async () => {
       setLoading(true);
+      setError(null);
+      setCurrentQuestionIndex(0);
+      setScore(0);
+      setSelectAnswer(null);
+
       const fetchedQuestions = await fetchQuizQuestions(
         category,
         difficulty,
-        limit
+        limit,
       );
+
       setQuestions(fetchedQuestions);
+
+      if (fetchedQuestions.length === 0) {
+        setError(
+          "No questions found for this selection. Try another category or choose Any.",
+        );
+      }
+
       setLoading(false);
     };
+
     fetchData();
   }, [gameStarted, category, difficulty, limit]);
 
   const handleAnswerClick = (answer: string) => {
     setSelectAnswer(answer);
+
     if (answer === currentQuestion.correct_answer) {
       setScore((prev) => prev + 1);
     }
@@ -62,6 +88,7 @@ function App() {
     setCurrentQuestionIndex(0);
     setScore(0);
     setQuestions([]);
+    setError(null);
     setGameStarted(false);
   };
 
@@ -80,6 +107,14 @@ function App() {
         />
       ) : loading ? (
         <QuizLoading />
+      ) : error ? (
+        <div className="setup-container">
+          <h1>Could not load quiz</h1>
+          <p>{error}</p>
+          <button onClick={handleRestart} className="setup-button">
+            Back to setup
+          </button>
+        </div>
       ) : currentQuestionIndex < questions.length ? (
         <QuestionCard
           question={currentQuestion.question}
