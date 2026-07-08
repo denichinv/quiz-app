@@ -1,7 +1,7 @@
 # DevQuiz 🎯
 
 A developer-focused quiz app built with **React**, **TypeScript**, **Vite**, and **SASS**.  
-Choose your category, set the difficulty, and test your knowledge with random multiple-choice questions powered by the [QuizAPI.io](https://quizapi.io/).
+Choose a developer-focused category, set the difficulty, and test your knowledge with random multiple-choice questions powered by [QuizAPI.io](https://quizapi.io/).
 
 🔗 **Live Demo**: [dev-quiz-v.netlify.app](https://dev-quiz-v.netlify.app)
 
@@ -14,11 +14,13 @@ Choose your category, set the difficulty, and test your knowledge with random mu
 
 ## 🧠 Features
 
-- 🎮 Custom quizzes (category, difficulty, question count)
+- 🎮 Custom quizzes by category, difficulty, and question count
 - ✅ Instant feedback on answer selection
 - 🧾 Score tracking and final results screen
 - 🔁 Restart quiz functionality
-- 🎨 Modular styling with SCSS (SASS)
+- ⚠️ Empty-state handling when no questions are returned
+- 🔐 Server-side QuizAPI proxy using Netlify Functions
+- 🎨 Modular styling with SCSS/SASS
 
 ---
 
@@ -26,123 +28,178 @@ Choose your category, set the difficulty, and test your knowledge with random mu
 
 - ⚛️ React + TypeScript
 - ⚡ Vite
-- 🎨 SASS (SCSS Modules)
-- 🔌 QuizAPI.io (external quiz data)
-- ☁️ Netlify (deployment)
+- 🎨 SASS / SCSS
+- 🔌 QuizAPI.io
+- ☁️ Netlify + Netlify Functions
 - 🧪 Vitest + React Testing Library
-- 🧪 Playwright (End-to-End testing)
+- 🎭 Playwright for end-to-end testing
 
 ---
 
 ## 🚀 Getting Started
 
-```bash
-# Install dependencies
-npm install
+This repository uses a nested app structure:
 
-# Create environment file
+```txt
+repo-root/
+├── netlify.toml
+└── quiz-app/
+    ├── src/
+    ├── netlify/functions/
+    └── package.json
+```
+
+Install dependencies from the app directory:
+
+```bash
+cd quiz-app
+npm install
+```
+
+Create a local environment file:
+
+```bash
 touch .env
 ```
 
+Add your QuizAPI key:
+
 ```env
-VITE_REACT_APP_QUIZ_API_KEY=your_api_key_here
+QUIZ_API_KEY=your_api_key_here
 ```
 
+The API key is used only by the Netlify Function. It is not exposed to the browser.
+
+For normal frontend development:
+
 ```bash
-# Start development server
 npm run dev
 ```
+
+For local development with the Netlify Function proxy, run Netlify Dev from the repository root:
+
+```bash
+cd ..
+npx netlify dev
+```
+
+---
+
+## 🔐 API Proxy
+
+The frontend does not call QuizAPI directly.
+
+Instead, the app calls:
+
+```txt
+/.netlify/functions/questions
+```
+
+The Netlify Function then:
+
+- reads `QUIZ_API_KEY` from the server environment
+- calls QuizAPI securely
+- normalizes the QuizAPI response
+- returns a stable question format to the React app
+
+This keeps the API key server-side and prevents exposing it in browser requests.
 
 ---
 
 ## 🧪 Testing
 
-This project includes both **unit/integration tests** and **end-to-end (E2E) tests**.
+This project includes both **unit/integration tests** and **end-to-end tests**.
 
 ### Unit & Integration Tests
 
 Written using **Vitest** and **React Testing Library**.
 
 ```bash
-# Run tests
 npm run test
+```
 
-# Run tests with coverage
+Run with coverage:
+
+```bash
 npm run test -- --coverage
+```
 
-# Watch mode
-npm run test -- --watch
+Run once without watch mode:
+
+```bash
+npm run test -- --run
 ```
 
 **Coverage highlights:**
 
 - Components: 100%
 - Utilities: 100%
-- Integration (App state & user flows)
+- Integration coverage for app state and user flows
 - Overall coverage: ~90%
 
 ---
 
-### End-to-End (E2E) Tests
+### End-to-End Tests
 
-E2E tests are written with **Playwright** and run against the **deployed Netlify application**.
+E2E tests are written with **Playwright**.
+
+The tests run against a local Vite dev server and mock the Netlify Function response. This keeps the tests fast, stable, and independent from third-party API limits.
 
 They validate the main user journeys:
 
 - App loads successfully
 - Quiz can be started
 - Questions and answers render
+- Answer feedback appears
 - Quiz can be completed
 - Results screen is displayed
-- Quiz can be restarted
 
 ```bash
-# Run E2E tests
 npx playwright test
-
-# Run with a single worker (recommended to reduce API rate limits)
-npx playwright test --workers=1
-
-# Open Playwright HTML report
-npx playwright show-report
 ```
 
-#### ⚠️ Note on API limits
+Open the Playwright HTML report:
 
-E2E tests rely on a third-party quiz API.  
-If tests are run repeatedly, occasional **HTTP 429 (rate limit)** responses may occur.  
-In such cases, re-running later or using `--workers=1` is recommended.
+```bash
+npx playwright show-report
+```
 
 ---
 
 ## 🔐 Environment Variables
 
-| Key                           | Description        |
-| ----------------------------- | ------------------ |
-| `VITE_REACT_APP_QUIZ_API_KEY` | QuizAPI.io API key |
+| Key            | Used by          | Description                    |
+| -------------- | ---------------- | ------------------------------ |
+| `QUIZ_API_KEY` | Netlify Function | Server-side QuizAPI.io API key |
+
+Do not prefix this key with `VITE_`.
+
+`VITE_` environment variables are exposed to the browser by Vite, so they are not appropriate for private API secrets.
 
 ---
 
 ## 📁 Folder Structure
 
-```
-src/
-├── components/
-│   ├── *.test.tsx
-├── styles/
-├── types/
-├── utils/
-│   ├── *.test.ts
-├── App.tsx
-├── App.test.tsx
-└── main.tsx
-```
-
-```
-e2e/
-├── quiz-app-home.spec.ts
-├── quiz-app-quiz.spec.ts
-└── quiz-app-results.spec.ts
+```txt
+quiz-app/
+├── e2e/
+│   ├── mocks/
+│   ├── quiz-app-home.spec.ts
+│   ├── quiz-app-quiz.spec.ts
+│   └── quiz-app-results.spec.ts
+├── netlify/
+│   └── functions/
+│       └── questions.ts
+├── src/
+│   ├── components/
+│   │   ├── *.test.tsx
+│   ├── styles/
+│   ├── types/
+│   ├── utils/
+│   │   ├── *.test.ts
+│   ├── App.tsx
+│   ├── App.test.tsx
+│   └── main.tsx
 ```
 
 ---
