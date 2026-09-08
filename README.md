@@ -209,6 +209,6 @@ quiz-app/
 **Vilizar Denichin**  
 Frontend Developer (React & TypeScript)
 
-🔗 Portfolio: https://vilizardenichin.netlify.app  
+🔗 Portfolio: https://vilizar.dev
 🔗 GitHub: https://github.com/denichinv  
 🔗 LinkedIn: https://linkedin.com/in/vilizar-denichin
