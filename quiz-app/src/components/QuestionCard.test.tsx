@@ -48,6 +48,17 @@ describe("QuestionCard component tests", () => {
     expect(screen.getByText("Question 1 of 5")).toBeInTheDocument();
   });
 
+  test("should render a visual progress bar for the current quiz position", () => {
+    QuestionCardRender({ currentQuestionIndex: 1, total: 5 });
+
+    const progressBar = screen.getByRole("progressbar", {
+      name: /quiz progress/i,
+    });
+
+    expect(progressBar).toBeInTheDocument();
+    expect(progressBar).toHaveAttribute("aria-valuenow", "40");
+  });
+
   test("should render all test buttons ", () => {
     QuestionCardRender();
     const buttons = screen.getAllByRole("button");
