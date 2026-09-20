@@ -18,10 +18,11 @@ describe("QuestionCard component tests", () => {
         onNextQuestion={onNextQuestion}
         onRestartQuestion={onRestartQuestion}
         isLastQuestion={false}
+        currentQuestionIndex={0}
         score={0}
         total={5}
         {...props}
-      />
+      />,
     );
   };
 
@@ -40,6 +41,11 @@ describe("QuestionCard component tests", () => {
   test("should display the current score", () => {
     QuestionCardRender();
     expect(screen.getByText("Score: 0 / 5")).toBeInTheDocument();
+  });
+
+  test("should display the current question progress", () => {
+    QuestionCardRender();
+    expect(screen.getByText("Question 1 of 5")).toBeInTheDocument();
   });
 
   test("should render all test buttons ", () => {
@@ -112,7 +118,7 @@ describe("QuestionCard component tests", () => {
     QuestionCardRender({ selectedAnswer: "b" });
 
     expect(
-      screen.getByText("❌ Incorrect. Correct answer: a")
+      screen.getByText("❌ Incorrect. Correct answer: a"),
     ).toBeInTheDocument();
   });
   test('should apply the "correct" class to the correct button', () => {

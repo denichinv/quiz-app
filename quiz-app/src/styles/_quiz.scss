@@ -59,12 +59,24 @@ button {
   @include mix.text-style($size: var.$font-size-md, $align: center);
   font-style: italic;
   margin-top: -1rem;
-  margin-bottom: var.$spacing-xl;
+  margin-bottom: var.$spacing-sm;
   border: 1px solid var.$border-color-light;
   border-radius: var.$border-radius-xl;
   padding: var.$spacing-sm var.$spacing-md;
   display: inline-block;
   box-shadow: var.$box-shadow;
+}
+
+.question-progress {
+  @include mix.text-style(
+    $size: var.$font-size-sm,
+    $weight: var.$font-weight-bold,
+    $align: center
+  );
+  color: var.$text-secondary;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: var.$spacing-xl;
 }
 
 .loading-screen {
