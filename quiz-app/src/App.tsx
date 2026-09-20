@@ -42,6 +42,7 @@ function App() {
 
   useEffect(() => {
     if (!gameStarted) return;
+    let isCancelled = false;
 
     const fetchData = async () => {
       setLoading(true);
@@ -55,6 +56,7 @@ function App() {
         difficulty,
         limit,
       );
+      if (isCancelled) return;
 
       setQuestions(fetchedQuestions);
 
@@ -68,6 +70,9 @@ function App() {
     };
 
     fetchData();
+    return () => {
+      isCancelled = true;
+    };
   }, [gameStarted, category, difficulty, limit]);
 
   const handleAnswerClick = (answer: string) => {

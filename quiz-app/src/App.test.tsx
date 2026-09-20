@@ -19,7 +19,7 @@ describe("App integration test", () => {
 
   test("should show loading when Start Quiz is clicked", () => {
     vi.mocked(fetchQuizQuestions).mockImplementation(
-      () => new Promise(() => {})
+      () => new Promise(() => {}),
     );
 
     render(<App />);
@@ -75,5 +75,26 @@ describe("App integration test", () => {
     fireEvent.click(screen.getByText("A library"));
 
     expect(screen.getByText("Score: 1 / 1")).toBeInTheDocument();
+  });
+  test("should show an empty-state message when no questions are returned", async () => {
+    vi.mocked(fetchQuizQuestions).mockResolvedValue([]);
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Start Quiz" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Could not load quiz")).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getByText(
+        "No questions found for this selection. Try another category or choose Any.",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("button", { name: "Back to setup" }),
+    ).toBeInTheDocument();
   });
 });
