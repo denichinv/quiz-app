@@ -125,6 +125,7 @@ function App() {
           onNextQuestion={handleNextQuestion}
           onRestartQuestion={handleRestart}
           isLastQuestion={currentQuestionIndex === questions.length - 1}
+          currentQuestionIndex={currentQuestionIndex}
           score={score}
           total={questions.length}
         />

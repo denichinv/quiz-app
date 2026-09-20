@@ -7,6 +7,7 @@ interface QuestionCardProps {
   onNextQuestion: () => void;
   onRestartQuestion: () => void;
   isLastQuestion: boolean;
+  currentQuestionIndex: number;
   score: number;
   total: number;
 }
@@ -14,7 +15,7 @@ interface QuestionCardProps {
 const getAnswerClass = (
   answer: string,
   correct: string,
-  selected: string | null
+  selected: string | null,
 ) => {
   if (!selected) return "";
   if (answer !== selected) return "";
@@ -30,12 +31,16 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   onNextQuestion,
   onRestartQuestion,
   isLastQuestion,
+  currentQuestionIndex,
   score,
   total,
 }) => (
   <div className="quiz-container">
     <p className="score">
       Score: {score} / {total}
+    </p>
+    <p className="question-progress" aria-live="polite">
+      Question {currentQuestionIndex + 1} of {total}
     </p>
     <h2 className="quiz-question" data-testid="quiz-question">
       {question}
@@ -50,7 +55,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           className={`quiz-button ${getAnswerClass(
             answer,
             correctAnswer,
-            selectedAnswer
+            selectedAnswer,
           )}`}
         >
           {answer}
