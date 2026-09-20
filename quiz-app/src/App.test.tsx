@@ -135,3 +135,33 @@ describe("request recovery", () => {
     expect(screen.getByRole("button", { name: "Start Quiz" })).toBeInTheDocument();
   });
 });
+
+test("reviews answers and retries only missed questions without fetching again", async () => {
+  vi.mocked(fetchQuizQuestions).mockReset().mockResolvedValue([
+    { question: "First question", answers: ["First right", "First wrong"], correct_answer: "First right", incorrect_answers: ["First wrong"] },
+    { question: "Second question", answers: ["Second right", "Second wrong"], correct_answer: "Second right", incorrect_answers: ["Second wrong"] },
+  ]);
+  render(<App />);
+  fireEvent.click(screen.getByRole("button", { name: "Start Quiz" }));
+  fireEvent.click(await screen.findByRole("button", { name: "First right" }));
+  fireEvent.click(screen.getByRole("button", { name: /Next Question/ }));
+  fireEvent.click(screen.getByRole("button", { name: "Second wrong" }));
+  fireEvent.click(screen.getByRole("button", { name: "Finish Quiz" }));
+  expect(screen.getByText("Final Score: 1 / 2")).toBeInTheDocument();
+  expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  expect(screen.getByText("Second wrong", { exact: false })).toBeInTheDocument();
+  expect(screen.getByText("Second right", { exact: false })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Retry missed questions (1)" }));
+  expect(screen.getByText("Second question")).toBeInTheDocument();
+  expect(screen.getByText("Score: 0 / 1")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Second wrong" }));
+  fireEvent.click(screen.getByRole("button", { name: "Finish Quiz" }));
+  fireEvent.click(screen.getByRole("button", { name: "Retry missed questions (1)" }));
+  fireEvent.click(screen.getByRole("button", { name: "Second right" }));
+  fireEvent.click(screen.getByRole("button", { name: "Finish Quiz" }));
+  expect(screen.getByText("Final Score: 1 / 1")).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /Retry missed/ })).not.toBeInTheDocument();
+  expect(fetchQuizQuestions).toHaveBeenCalledTimes(1);
+  fireEvent.click(screen.getByRole("button", { name: /Restart Quiz/ }));
+  expect(screen.getByRole("button", { name: "Start Quiz" })).toBeInTheDocument();
+});

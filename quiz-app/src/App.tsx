@@ -11,6 +11,7 @@ function App() {
   const [selectAnswer, setSelectAnswer] = useState<string | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [answerHistory, setAnswerHistory] = useState<string[]>([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [category, setCategory] = useState("");
   const [difficulty, setDifficulty] = useState("");
@@ -54,6 +55,7 @@ function App() {
       setSelectAnswer(null);
 
       setQuestions([]);
+      setAnswerHistory([]);
       try {
         const fetchedQuestions = await fetchQuizQuestions(category, difficulty, limit);
         if (isCancelled) return;
@@ -78,6 +80,8 @@ function App() {
   }, [gameStarted, category, difficulty, limit, requestAttempt]);
 
   const handleAnswerClick = (answer: string) => {
+    if (selectAnswer !== null || !currentQuestion) return;
+    setAnswerHistory((previous) => [...previous, answer]);
     setSelectAnswer(answer);
 
     if (answer === currentQuestion.correct_answer) {
@@ -96,7 +100,19 @@ function App() {
     setScore(0);
     setQuestions([]);
     setError(null);
+    setAnswerHistory([]);
     setGameStarted(false);
+  };
+
+  const handleRetryMissed = () => {
+    const missed = questions.filter((question, index) =>
+      answerHistory[index] !== question.correct_answer);
+    if (missed.length === 0) return;
+    setQuestions(missed);
+    setAnswerHistory([]);
+    setSelectAnswer(null);
+    setCurrentQuestionIndex(0);
+    setScore(0);
   };
 
   return (
@@ -143,6 +159,12 @@ function App() {
         <QuizComplete
           correct={score}
           questionsCount={questions.length}
+          review={questions.map((question, index) => ({
+            question: question.question,
+            correctAnswer: question.correct_answer,
+            selectedAnswer: answerHistory[index],
+          }))}
+          onRetryMissed={handleRetryMissed}
           onRestart={handleRestart}
         />
       )}
