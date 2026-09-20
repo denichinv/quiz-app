@@ -113,8 +113,8 @@ describe("request recovery", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't connect.");
     fireEvent.click(screen.getByRole("button", { name: "Retry" }));
     expect(await screen.findByText("Recovered question")).toBeInTheDocument();
-    expect(fetchQuizQuestions).toHaveBeenNthCalledWith(1, "React", "hard", 10);
-    expect(fetchQuizQuestions).toHaveBeenNthCalledWith(2, "React", "hard", 10);
+    expect(fetchQuizQuestions).toHaveBeenNthCalledWith(1, "React", "hard", 10, expect.any(AbortSignal));
+    expect(fetchQuizQuestions).toHaveBeenNthCalledWith(2, "React", "hard", 10, expect.any(AbortSignal));
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
@@ -164,4 +164,14 @@ test("reviews answers and retries only missed questions without fetching again",
   expect(fetchQuizQuestions).toHaveBeenCalledTimes(1);
   fireEvent.click(screen.getByRole("button", { name: /Change settings/ }));
   expect(screen.getByRole("button", { name: "Start Quiz" })).toBeInTheDocument();
+});
+
+test("cancels the active quiz request when the app unmounts", () => {
+  vi.mocked(fetchQuizQuestions).mockReset().mockImplementation(() => new Promise(() => {}));
+  const { unmount } = render(<App />);
+  fireEvent.click(screen.getByRole("button", { name: "Start Quiz" }));
+  const signal = vi.mocked(fetchQuizQuestions).mock.calls[0][3];
+  expect(signal?.aborted).toBe(false);
+  unmount();
+  expect(signal?.aborted).toBe(true);
 });

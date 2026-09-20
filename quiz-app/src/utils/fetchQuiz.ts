@@ -55,6 +55,7 @@ export const fetchQuizQuestions = async (
   category: string,
   difficulty: string,
   limit: number,
+  signal?: AbortSignal,
 ): Promise<QuizQuestionWithAnswers[]> => {
   const params = new URLSearchParams({
     limit: String(limit),
@@ -68,35 +69,63 @@ export const fetchQuizQuestions = async (
     params.set("difficulty", difficulty);
   }
 
-  let res: Response;
+  const controller = new AbortController();
+  let timedOut = false;
+  const cancel = () => controller.abort(signal?.reason);
+  if (signal?.aborted) cancel();
+  else signal?.addEventListener("abort", cancel, { once: true });
+
+  // Keep the deadline active through response-body reading, not just headers.
+  const timeout = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, 15_000);
+
   try {
-    res = await fetch(`/.netlify/functions/questions?${params.toString()}`);
-  } catch {
-    throw new Error("Couldn't connect. Check your internet connection and try again.");
-  }
+    controller.signal.throwIfAborted();
+    let res: Response;
+    try {
+      res = await fetch(`/.netlify/functions/questions?${params.toString()}`, {
+        signal: controller.signal,
+      });
+    } catch {
+      controller.signal.throwIfAborted();
+      throw new Error("Couldn't connect. Check your internet connection and try again.");
+    }
 
-  if (!res.ok) {
-    throw new Error(res.status === 429
-      ? "Too many quiz requests. Please wait a moment and retry."
-      : "The quiz service is unavailable. Please try again.");
-  }
+    if (!res.ok) {
+      throw new Error(res.status === 429
+        ? "Too many quiz requests. Please wait a moment and retry."
+        : "The quiz service is unavailable. Please try again.");
+    }
 
-  let data: unknown;
-  try {
-    data = await res.json();
-  } catch {
-    throw new Error("The quiz service returned an invalid response. Please try again.");
-  }
-  if (!Array.isArray(data)) {
-    throw new Error("The quiz service returned an invalid response. Please try again.");
-  }
+    let data: unknown;
+    try {
+      data = await res.json();
+    } catch {
+      controller.signal.throwIfAborted();
+      throw new Error("The quiz service returned an invalid response. Please try again.");
+    }
+    controller.signal.throwIfAborted();
+    if (!Array.isArray(data)) {
+      throw new Error("The quiz service returned an invalid response. Please try again.");
+    }
 
-  const questions = data.flatMap((question: unknown) => {
-    const parsed = parseQuestion(question);
-    return parsed ? [parsed] : [];
-  });
-  if (data.length > 0 && questions.length === 0) {
-    throw new Error("No supported single-answer questions were returned. Try again or change your settings.");
+    const questions = data.flatMap((question: unknown) => {
+      const parsed = parseQuestion(question);
+      return parsed ? [parsed] : [];
+    });
+    if (data.length > 0 && questions.length === 0) {
+      throw new Error("No supported single-answer questions were returned. Try again or change your settings.");
+    }
+    return questions;
+  } catch (error) {
+    if (timedOut) {
+      throw new Error("Loading questions took too long. Please try again.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+    signal?.removeEventListener("abort", cancel);
   }
-  return questions;
 };

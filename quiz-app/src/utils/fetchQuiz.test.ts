@@ -24,6 +24,7 @@ describe("FetchQuiz testing", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       "/.netlify/functions/questions?limit=5&category=SQL&difficulty=easy",
+      { signal: expect.any(AbortSignal) },
     );
   });
 
@@ -152,3 +153,61 @@ describe("single-answer validation", () => {
      await expect(fetchQuizQuestions("", "", 5)).rejects.toThrow("invalid response");
    } finally { vi.unstubAllGlobals(); }
  });
+
+describe("request deadlines and cancellation", () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  const waitForAbort = (signal: AbortSignal) => new Promise<never>((_resolve, reject) => {
+    signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+  });
+
+  test.each(["headers", "body"])("times out stalled %s and allows a fresh retry", async (stage) => {
+    let requestSignal!: AbortSignal;
+    const fetchMock = vi.fn((_url: string, options: RequestInit) => {
+      requestSignal = options.signal as AbortSignal;
+      return stage === "headers"
+        ? waitForAbort(requestSignal)
+        : Promise.resolve({ ok: true, json: () => waitForAbort(requestSignal) });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const request = fetchQuizQuestions("", "", 5);
+    const assertion = expect(request).rejects.toThrow("Loading questions took too long");
+    await vi.advanceTimersByTimeAsync(15_000);
+    await assertion;
+    expect(requestSignal.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => [] }));
+    await expect(fetchQuizQuestions("", "", 5)).resolves.toEqual([]);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  test("cancels an obsolete request without reporting a timeout", async () => {
+    const caller = new AbortController();
+    let requestSignal!: AbortSignal;
+    vi.stubGlobal("fetch", vi.fn((_url: string, options: RequestInit) => {
+      requestSignal = options.signal as AbortSignal;
+      return waitForAbort(requestSignal);
+    }));
+    const request = fetchQuizQuestions("", "", 5, caller.signal);
+    const assertion = expect(request).rejects.toMatchObject({ name: "AbortError" });
+    caller.abort();
+    await assertion;
+    expect(requestSignal.aborted).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  test("does not send an already-cancelled request", async () => {
+    const caller = new AbortController();
+    caller.abort();
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(fetchQuizQuestions("", "", 5, caller.signal)).rejects.toMatchObject({ name: "AbortError" });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});

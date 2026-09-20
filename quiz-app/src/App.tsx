@@ -46,6 +46,7 @@ function App() {
   useEffect(() => {
     if (!gameStarted) return;
     let isCancelled = false;
+    const controller = new AbortController();
 
     const fetchData = async () => {
       setLoading(true);
@@ -57,7 +58,7 @@ function App() {
       setQuestions([]);
       setAnswerHistory([]);
       try {
-        const fetchedQuestions = await fetchQuizQuestions(category, difficulty, limit);
+        const fetchedQuestions = await fetchQuizQuestions(category, difficulty, limit, controller.signal);
         if (isCancelled) return;
         setQuestions(fetchedQuestions);
         if (fetchedQuestions.length === 0) {
@@ -76,6 +77,7 @@ function App() {
     fetchData();
     return () => {
       isCancelled = true;
+      controller.abort();
     };
   }, [gameStarted, category, difficulty, limit, requestAttempt]);
 
