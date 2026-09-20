@@ -98,3 +98,40 @@ describe("App integration test", () => {
     ).toBeInTheDocument();
   });
 });
+
+describe("request recovery", () => {
+  beforeEach(() => vi.mocked(fetchQuizQuestions).mockReset());
+
+  test("retries using the same settings and recovers from a failed request", async () => {
+    vi.mocked(fetchQuizQuestions).mockRejectedValueOnce(new Error("Couldn't connect."))
+      .mockResolvedValueOnce([{ question: "Recovered question", correct_answer: "Yes", incorrect_answers: ["No"], answers: ["Yes", "No"] }]);
+    render(<App />);
+    fireEvent.change(screen.getByLabelText("Category:"), { target: { value: "React" } });
+    fireEvent.change(screen.getByLabelText("Difficulty:"), { target: { value: "hard" } });
+    fireEvent.change(screen.getByLabelText("Number of Questions:"), { target: { value: "10" } });
+    fireEvent.click(screen.getByRole("button", { name: "Start Quiz" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Couldn't connect.");
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    expect(await screen.findByText("Recovered question")).toBeInTheDocument();
+    expect(fetchQuizQuestions).toHaveBeenNthCalledWith(1, "React", "hard", 10);
+    expect(fetchQuizQuestions).toHaveBeenNthCalledWith(2, "React", "hard", 10);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  test("shows loading during retry and allows setup after another failure", async () => {
+    let rejectRetry!: (error: Error) => void;
+    vi.mocked(fetchQuizQuestions).mockResolvedValueOnce([]).mockImplementationOnce(
+      () => new Promise((_resolve, reject) => { rejectRetry = reject; }),
+    );
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Start Quiz" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("No questions found");
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    expect(screen.getByText("Loading questions...")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Retry" })).not.toBeInTheDocument();
+    rejectRetry(new Error("Service unavailable"));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Service unavailable");
+    fireEvent.click(screen.getByRole("button", { name: "Back to setup" }));
+    expect(screen.getByRole("button", { name: "Start Quiz" })).toBeInTheDocument();
+  });
+});

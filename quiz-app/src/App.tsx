@@ -18,6 +18,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [requestAttempt, setRequestAttempt] = useState(0);
+
   const currentQuestion = questions[currentQuestionIndex];
 
   const categories = [
@@ -51,29 +53,29 @@ function App() {
       setScore(0);
       setSelectAnswer(null);
 
-      const fetchedQuestions = await fetchQuizQuestions(
-        category,
-        difficulty,
-        limit,
-      );
-      if (isCancelled) return;
-
-      setQuestions(fetchedQuestions);
-
-      if (fetchedQuestions.length === 0) {
-        setError(
-          "No questions found for this selection. Try another category or choose Any.",
-        );
+      setQuestions([]);
+      try {
+        const fetchedQuestions = await fetchQuizQuestions(category, difficulty, limit);
+        if (isCancelled) return;
+        setQuestions(fetchedQuestions);
+        if (fetchedQuestions.length === 0) {
+          setError("No questions found for this selection. Try another category or choose Any.");
+        }
+      } catch (requestError) {
+        if (isCancelled) return;
+        setError(requestError instanceof Error
+          ? requestError.message
+          : "Could not load questions. Please try again.");
+      } finally {
+        if (!isCancelled) setLoading(false);
       }
-
-      setLoading(false);
     };
 
     fetchData();
     return () => {
       isCancelled = true;
     };
-  }, [gameStarted, category, difficulty, limit]);
+  }, [gameStarted, category, difficulty, limit, requestAttempt]);
 
   const handleAnswerClick = (answer: string) => {
     setSelectAnswer(answer);
@@ -115,7 +117,10 @@ function App() {
       ) : error ? (
         <div className="setup-container">
           <h1>Could not load quiz</h1>
-          <p>{error}</p>
+          <p role="alert">{error}</p>
+          <button onClick={() => setRequestAttempt((attempt) => attempt + 1)} className="setup-button">
+            Retry
+          </button>
           <button onClick={handleRestart} className="setup-button">
             Back to setup
           </button>

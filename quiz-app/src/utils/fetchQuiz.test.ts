@@ -27,17 +27,15 @@ describe("FetchQuiz testing", () => {
     );
   });
 
-  test("should return empty array when request fails", async () => {
+  test("reports connection failures", async () => {
     const fetchMock = vi.fn(() => Promise.reject(new Error("Network error")));
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const result = await fetchQuizQuestions("SQL", "easy", 5);
-
-    expect(result).toEqual([]);
+    await expect(fetchQuizQuestions("SQL", "easy", 5)).rejects.toThrow("Couldn't connect");
   });
 
-  test("should return empty array when API response is not ok", async () => {
+  test("reports service failures", async () => {
     const fetchMock = vi.fn(() =>
       Promise.resolve({
         ok: false,
@@ -47,12 +45,10 @@ describe("FetchQuiz testing", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const result = await fetchQuizQuestions("SQL", "easy", 5);
-
-    expect(result).toEqual([]);
+    await expect(fetchQuizQuestions("SQL", "easy", 5)).rejects.toThrow("quiz service is unavailable");
   });
 
-  test("should return empty array when API response is invalid", async () => {
+  test("reports invalid responses", async () => {
     const fetchMock = vi.fn(() =>
       Promise.resolve({
         ok: true,
@@ -62,9 +58,7 @@ describe("FetchQuiz testing", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const result = await fetchQuizQuestions("SQL", "easy", 5);
-
-    expect(result).toEqual([]);
+    await expect(fetchQuizQuestions("SQL", "easy", 5)).rejects.toThrow("invalid response");
   });
 
   test("should successfully fetch and transform quiz data", async () => {
@@ -136,10 +130,25 @@ describe("single-answer validation", () => {
     expect(result[0].answers).toEqual(expect.arrayContaining(["Yes", "No"]));
   });
 
-  test("returns an empty quiz when all questions are invalid", async () => {
+  test("reports when all questions are unsupported", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       ok: true, json: async () => [null, {}],
     }));
-    expect(await fetchQuizQuestions("", "", 5)).toEqual([]);
+    await expect(fetchQuizQuestions("", "", 5)).rejects.toThrow("No supported single-answer questions");
   });
 });
+
+ test("reports rate limits even when the response body is not JSON", async () => {
+   vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 429 }));
+   try {
+     await expect(fetchQuizQuestions("", "", 5)).rejects.toThrow("Too many quiz requests");
+   } finally { vi.unstubAllGlobals(); }
+ });
+ test("reports malformed JSON", async () => {
+   vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+     ok: true, json: async () => { throw new SyntaxError("Invalid JSON"); },
+   }));
+   try {
+     await expect(fetchQuizQuestions("", "", 5)).rejects.toThrow("invalid response");
+   } finally { vi.unstubAllGlobals(); }
+ });

@@ -68,29 +68,35 @@ export const fetchQuizQuestions = async (
     params.set("difficulty", difficulty);
   }
 
+  let res: Response;
   try {
-    const res = await fetch(
-      `/.netlify/functions/questions?${params.toString()}`,
-    );
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      console.error("Failed to fetch quiz questions:", data);
-      return [];
-    }
-
-    if (!Array.isArray(data)) {
-      console.error("Invalid API response:", data);
-      return [];
-    }
-
-    return data.flatMap((question: unknown) => {
-      const parsed = parseQuestion(question);
-      return parsed ? [parsed] : [];
-    });
-  } catch (error) {
-    console.error("Quiz request failed:", error);
-    return [];
+    res = await fetch(`/.netlify/functions/questions?${params.toString()}`);
+  } catch {
+    throw new Error("Couldn't connect. Check your internet connection and try again.");
   }
+
+  if (!res.ok) {
+    throw new Error(res.status === 429
+      ? "Too many quiz requests. Please wait a moment and retry."
+      : "The quiz service is unavailable. Please try again.");
+  }
+
+  let data: unknown;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error("The quiz service returned an invalid response. Please try again.");
+  }
+  if (!Array.isArray(data)) {
+    throw new Error("The quiz service returned an invalid response. Please try again.");
+  }
+
+  const questions = data.flatMap((question: unknown) => {
+    const parsed = parseQuestion(question);
+    return parsed ? [parsed] : [];
+  });
+  if (data.length > 0 && questions.length === 0) {
+    throw new Error("No supported single-answer questions were returned. Try again or change your settings.");
+  }
+  return questions;
 };
