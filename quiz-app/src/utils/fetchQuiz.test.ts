@@ -106,3 +106,40 @@ describe("FetchQuiz testing", () => {
     expect(result[0].answers).toContain("A library");
   });
 });
+
+describe("single-answer validation", () => {
+  const valid = {
+    question: "Question?",
+    answers: { answer_a: "Yes", answer_b: "No" },
+    correct_answers: { answer_a_correct: "true", answer_b_correct: "false" },
+  };
+  afterEach(() => vi.unstubAllGlobals());
+
+  test.each([
+    null,
+    {},
+    { ...valid, question: " " },
+    { ...valid, correct_answers: { answer_a_correct: "true", answer_b_correct: "true" } },
+    { ...valid, correct_answers: { answer_a_correct: "false", answer_b_correct: "false" } },
+    { ...valid, correct_answers: {} },
+    { ...valid, answers: { answer_a: null, answer_b: "No" } },
+    { ...valid, answers: { answer_a: " ", answer_b: "No" } },
+    { ...valid, answers: { answer_a: "Yes", answer_b: " Yes " } },
+    { ...valid, answers: { answer_a: "Yes" } },
+  ])("skips invalid question %# and preserves valid questions", async (invalid) => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true, json: async () => [invalid, valid],
+    }));
+    const result = await fetchQuizQuestions("", "", 5);
+    expect(result).toHaveLength(1);
+    expect(result[0].correct_answer).toBe("Yes");
+    expect(result[0].answers).toEqual(expect.arrayContaining(["Yes", "No"]));
+  });
+
+  test("returns an empty quiz when all questions are invalid", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true, json: async () => [null, {}],
+    }));
+    expect(await fetchQuizQuestions("", "", 5)).toEqual([]);
+  });
+});

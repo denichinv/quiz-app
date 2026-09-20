@@ -2,6 +2,55 @@ import type { QuizQuestionWithAnswers } from "../types/Quiz";
 
 import { shuffleArray } from "./shuffleArray";
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+// This quiz supports exactly one correct, non-empty, distinct answer.
+const parseQuestion = (value: unknown): QuizQuestionWithAnswers | null => {
+  if (
+    !isRecord(value) ||
+    typeof value.question !== "string" ||
+    !value.question.trim() ||
+    !isRecord(value.answers) ||
+    !isRecord(value.correct_answers)
+  ) return null;
+
+  const answers: string[] = [];
+  const correctAnswers: string[] = [];
+  const answerKeys = [
+    "answer_a", "answer_b", "answer_c", "answer_d", "answer_e", "answer_f",
+  ];
+  for (const key of answerKeys) {
+    const answer = value.answers[key];
+    const flag = value.correct_answers[`${key}_correct`];
+    if (answer === null || answer === undefined) {
+      if (flag !== undefined && flag !== "false") return null;
+      continue;
+    }
+    if (
+      typeof answer !== "string" ||
+      !answer.trim() ||
+      (flag !== "true" && flag !== "false")
+    ) return null;
+    answers.push(answer);
+    if (flag === "true") correctAnswers.push(answer);
+  }
+
+  if (
+    answers.length < 2 ||
+    correctAnswers.length !== 1 ||
+    new Set(answers.map((answer) => answer.trim())).size !== answers.length
+  ) return null;
+
+  const correctAnswer = correctAnswers[0];
+  return {
+    question: value.question,
+    correct_answer: correctAnswer,
+    incorrect_answers: answers.filter((answer) => answer !== correctAnswer),
+    answers: shuffleArray(answers),
+  };
+};
+
 export const fetchQuizQuestions = async (
   category: string,
   difficulty: string,
@@ -36,24 +85,9 @@ export const fetchQuizQuestions = async (
       return [];
     }
 
-    return data.map((q: any) => {
-      const allAnswers = Object.entries(q.answers)
-        .filter(([_, value]) => value !== null)
-        .map(([_, value]) => value as string);
-
-      const correctKey = Object.entries(q.correct_answers).find(
-        ([_, isCorrect]) => isCorrect === "true",
-      )?.[0];
-
-      const correctAnswerKey = correctKey?.replace("_correct", "");
-      const correctAnswer = correctAnswerKey ? q.answers[correctAnswerKey] : "";
-
-      return {
-        question: q.question,
-        correct_answer: correctAnswer,
-        incorrect_answers: allAnswers.filter((a) => a !== correctAnswer),
-        answers: shuffleArray(allAnswers),
-      };
+    return data.flatMap((question: unknown) => {
+      const parsed = parseQuestion(question);
+      return parsed ? [parsed] : [];
     });
   } catch (error) {
     console.error("Quiz request failed:", error);
