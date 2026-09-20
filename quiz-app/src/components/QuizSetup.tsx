@@ -1,3 +1,5 @@
+import { QUIZ_DIFFICULTIES, QUIZ_LIMITS } from "../constants/quizOptions";
+
 interface QuizSetupProps {
   category: string;
   setCategory: (value: string) => void;
@@ -46,9 +48,11 @@ const QuizSetup: React.FC<QuizSetupProps> = ({
         onChange={(e) => setDifficulty(e.target.value)}
       >
         <option value="">Any</option>
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard</option>
+        {QUIZ_DIFFICULTIES.map((level) => (
+          <option key={level} value={level}>
+            {level[0].toUpperCase() + level.slice(1)}
+          </option>
+        ))}
       </select>
     </div>
 
@@ -59,10 +63,9 @@ const QuizSetup: React.FC<QuizSetupProps> = ({
         value={limit}
         onChange={(e) => setLimit(Number(e.target.value))}
       >
-        <option value={5}>5</option>
-        <option value={10}>10</option>
-        <option value={15}>15</option>
-        <option value={20}>20</option>
+        {QUIZ_LIMITS.map((count) => (
+          <option key={count} value={count}>{count}</option>
+        ))}
       </select>
     </div>
 

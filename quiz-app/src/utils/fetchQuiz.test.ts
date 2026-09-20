@@ -211,3 +211,12 @@ describe("request deadlines and cancellation", () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 });
+
+test("shows the retryable timeout message when the proxy returns 504", async () => {
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: false, status: 504 }));
+  try {
+    await expect(fetchQuizQuestions("", "", 5)).rejects.toThrow("Loading questions took too long. Please try again.");
+  } finally {
+    vi.unstubAllGlobals();
+  }
+});

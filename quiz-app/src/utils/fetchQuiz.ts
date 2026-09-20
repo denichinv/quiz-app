@@ -94,6 +94,9 @@ export const fetchQuizQuestions = async (
     }
 
     if (!res.ok) {
+      if (res.status === 504) {
+        throw new Error("Loading questions took too long. Please try again.");
+      }
       throw new Error(res.status === 429
         ? "Too many quiz requests. Please wait a moment and retry."
         : "The quiz service is unavailable. Please try again.");

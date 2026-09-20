@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchQuizQuestions } from "./utils/fetchQuiz";
 import { QuizQuestionWithAnswers } from "./types/Quiz";
+import { QUIZ_CATEGORIES } from "./constants/quizOptions";
 import QuizSetup from "./components/QuizSetup";
 import QuestionCard from "./components/QuestionCard";
 import QuizLoading from "./components/QuizLoading";
@@ -22,26 +23,6 @@ function App() {
   const [requestAttempt, setRequestAttempt] = useState(0);
 
   const currentQuestion = questions[currentQuestionIndex];
-
-  const categories = [
-    "JavaScript",
-    "TypeScript",
-    "React",
-    "CSS/HTML",
-    "SQL",
-    "Database",
-    "Git",
-    "GitHub Actions",
-    "Docker",
-    "Kubernetes",
-    "AWS",
-    "DevOps",
-    "Cybersecurity",
-    "Web Security",
-    "Algorithms",
-    "Regular Expressions",
-    "Python",
-  ];
 
   useEffect(() => {
     if (!gameStarted) return;
@@ -127,7 +108,7 @@ function App() {
           setDifficulty={setDifficulty}
           limit={limit}
           setLimit={setLimit}
-          categories={categories}
+          categories={QUIZ_CATEGORIES}
           onStart={() => setGameStarted(true)}
         />
       ) : loading ? (
