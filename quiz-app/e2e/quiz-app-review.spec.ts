@@ -5,8 +5,10 @@ for (const width of [390, 1280]) {
   test(`reviews and retries missed answers at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     let requests = 0;
+    const requestedLimits: string[] = [];
     await page.route("**/.netlify/functions/questions**", async (route) => {
       requests++;
+      requestedLimits.push(new URL(route.request().url()).searchParams.get("limit") ?? "");
       await route.fulfill({ json: mockQuizQuestions.slice(0, 2) });
     });
     await page.goto("/");
@@ -29,5 +31,13 @@ for (const width of [390, 1280]) {
     await expect(page.getByText("Final Score: 1 / 1")).toBeVisible();
     await expect(page.getByRole("button", { name: /Retry missed/ })).toHaveCount(0);
     expect(requests).toBe(1);
+    await page.getByRole("button", { name: "Play again", exact: true }).click();
+    await expect(page.getByTestId("quiz-question")).toHaveText("What is React?");
+    await expect(page.getByTestId("quiz-question")).toBeFocused();
+    await expect(page.getByText("Score: 0 / 2")).toBeVisible();
+    expect(requests).toBe(2);
+    expect(requestedLimits).toEqual(["5", "5"]);
+    await page.getByRole("button", { name: "Back to setup", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Start Quiz" })).toBeVisible();
   });
 }

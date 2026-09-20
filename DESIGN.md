@@ -53,7 +53,7 @@ Reuse small radii for review entries and medium radii for the result card. No ne
 
 ## Components
 
-QuizComplete owns results and answer review; QuestionCard owns active questions. App owns answer history and retry state. Retry missed questions starts a fresh score using only missed questions from the latest round, without network requests. Restart Quiz returns to setup. Native buttons retain shared hover, disabled, and focus styles. QuizSetup owns native selects; platform popup behavior is accepted. Results focus the completion heading on entry. All review rows render because quizzes are bounded by setup counts.
+QuizComplete owns results and answer review; QuestionCard owns active questions. App owns answer history and retry state. Retry missed questions starts a fresh score using only missed questions from the latest round, without network requests. Back to setup is always available on questions. Change settings returns from results to setup. Play again fetches a fresh quiz with the original settings, including the original question count after a missed-question round. Native buttons retain shared hover, disabled, and focus styles. QuizSetup owns native selects; platform popup behavior is accepted. Results focus the completion heading on entry; each question focuses its heading on entry. Answer feedback uses a live status region, with correct/incorrect text labels on revealed options. All review rows render because quizzes are bounded by setup counts.
 
 ## Do's and Don'ts
 

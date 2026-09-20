@@ -94,7 +94,7 @@ function App() {
     setCurrentQuestionIndex((prev) => prev + 1);
   };
 
-  const handleRestart = () => {
+  const handleBackToSetup = () => {
     setSelectAnswer(null);
     setCurrentQuestionIndex(0);
     setScore(0);
@@ -137,7 +137,7 @@ function App() {
           <button onClick={() => setRequestAttempt((attempt) => attempt + 1)} className="setup-button">
             Retry
           </button>
-          <button onClick={handleRestart} className="setup-button">
+          <button onClick={handleBackToSetup} className="setup-button">
             Back to setup
           </button>
         </div>
@@ -149,7 +149,7 @@ function App() {
           selectedAnswer={selectAnswer}
           onAnswerClick={handleAnswerClick}
           onNextQuestion={handleNextQuestion}
-          onRestartQuestion={handleRestart}
+          onBackToSetup={handleBackToSetup}
           isLastQuestion={currentQuestionIndex === questions.length - 1}
           currentQuestionIndex={currentQuestionIndex}
           score={score}
@@ -165,7 +165,8 @@ function App() {
             selectedAnswer: answerHistory[index],
           }))}
           onRetryMissed={handleRetryMissed}
-          onRestart={handleRestart}
+          onChangeSettings={handleBackToSetup}
+          onPlayAgain={() => setRequestAttempt((attempt) => attempt + 1)}
         />
       )}
     </>

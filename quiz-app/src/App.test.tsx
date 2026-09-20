@@ -162,6 +162,6 @@ test("reviews answers and retries only missed questions without fetching again",
   expect(screen.getByText("Final Score: 1 / 1")).toBeInTheDocument();
   expect(screen.queryByRole("button", { name: /Retry missed/ })).not.toBeInTheDocument();
   expect(fetchQuizQuestions).toHaveBeenCalledTimes(1);
-  fireEvent.click(screen.getByRole("button", { name: /Restart Quiz/ }));
+  fireEvent.click(screen.getByRole("button", { name: /Change settings/ }));
   expect(screen.getByRole("button", { name: "Start Quiz" })).toBeInTheDocument();
 });

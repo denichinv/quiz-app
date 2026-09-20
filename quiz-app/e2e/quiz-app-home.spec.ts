@@ -32,9 +32,7 @@ test.describe("Quiz App – Home", () => {
     await expect(page.getByTestId("answer-0")).toBeVisible();
     await expect(page.getByTestId("answer-1")).toBeVisible();
 
-    const answers = page.getByRole("button");
-    const count = await answers.count();
-
-    expect(count).toBe(2);
+    await expect(page.getByTestId(/^answer-/)).toHaveCount(2);
+    await expect(page.getByRole("button", { name: "Back to setup" })).toBeVisible();
   });
 });
