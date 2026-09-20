@@ -9,7 +9,7 @@ export default defineConfig({
     setupFiles: "./src/setupTests.ts",
     css: true,
 
-    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    include: ["src/**/*.{test,spec}.{ts,tsx}", "netlify/tests/**/*.test.ts"],
 
     exclude: ["node_modules/**", "e2e/**", "dist/**", ".idea/**", ".git/**"],
   },

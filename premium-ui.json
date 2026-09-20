@@ -1,0 +1,14 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": [
+    "quiz-app/src"
+  ],
+  "locale": "en",
+  "ownership": {
+    "Select/Listbox": "native"
+  },
+  "canonicalMap": "DESIGN.md",
+  "requiredCapabilities": [
+    "Select/Listbox"
+  ]
+}

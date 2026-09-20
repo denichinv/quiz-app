@@ -34,7 +34,7 @@ test.describe("Quiz App - Results", () => {
     await expect(page.getByText(/final score:/i)).toBeVisible();
 
     await expect(
-      page.getByRole("button", { name: /restart quiz/i }),
+      page.getByRole("button", { name: /change settings/i }),
     ).toBeVisible();
   });
 });

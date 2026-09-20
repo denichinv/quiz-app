@@ -5,7 +5,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 describe("QuestionCard component tests", () => {
   const onAnswerClick = vi.fn();
   const onNextQuestion = vi.fn();
-  const onRestartQuestion = vi.fn();
+  const onBackToSetup = vi.fn();
 
   const QuestionCardRender = (props = {}) => {
     return render(
@@ -16,7 +16,7 @@ describe("QuestionCard component tests", () => {
         selectedAnswer={null}
         onAnswerClick={onAnswerClick}
         onNextQuestion={onNextQuestion}
-        onRestartQuestion={onRestartQuestion}
+        onBackToSetup={onBackToSetup}
         isLastQuestion={false}
         currentQuestionIndex={0}
         score={0}
@@ -46,6 +46,17 @@ describe("QuestionCard component tests", () => {
   test("should display the current question progress", () => {
     QuestionCardRender();
     expect(screen.getByText("Question 1 of 5")).toBeInTheDocument();
+  });
+
+  test("should render a visual progress bar for the current quiz position", () => {
+    QuestionCardRender({ currentQuestionIndex: 1, total: 5 });
+
+    const progressBar = screen.getByRole("progressbar", {
+      name: /quiz progress/i,
+    });
+
+    expect(progressBar).toBeInTheDocument();
+    expect(progressBar).toHaveAttribute("aria-valuenow", "40");
   });
 
   test("should render all test buttons ", () => {
@@ -78,7 +89,7 @@ describe("QuestionCard component tests", () => {
   test("should shows Restart button after answer selection", () => {
     QuestionCardRender({ selectedAnswer: "a" });
 
-    expect(screen.getByText("Restart Quiz")).toBeInTheDocument();
+    expect(screen.getByText("Back to setup")).toBeInTheDocument();
   });
   test("should shows Show next button after answer selection", () => {
     QuestionCardRender({ selectedAnswer: "a" });
@@ -100,14 +111,14 @@ describe("QuestionCard component tests", () => {
 
     expect(onNextQuestion).toHaveBeenCalled();
   });
-  test("should calls onRestartQuestion when an answer button is clicked", () => {
+  test("should calls onBackToSetup when an answer button is clicked", () => {
     QuestionCardRender({ selectedAnswer: "a" });
 
-    const button = screen.getByText("Restart Quiz");
+    const button = screen.getByText("Back to setup");
 
     fireEvent.click(button);
 
-    expect(onRestartQuestion).toHaveBeenCalled();
+    expect(onBackToSetup).toHaveBeenCalled();
   });
   test("should shows correct message when correct answer is selected", () => {
     QuestionCardRender({ selectedAnswer: "a" });
@@ -135,4 +146,19 @@ describe("QuestionCard component tests", () => {
 
     expect(incorrectButton).toHaveClass("incorrect");
   });
+  test("allows returning to setup before answering", () => {
+    QuestionCardRender();
+    fireEvent.click(screen.getByRole("button", { name: "Back to setup" }));
+    expect(onBackToSetup).toHaveBeenCalledOnce();
+    expect(onAnswerClick).not.toHaveBeenCalled();
+  });
+
+  test("reveals the correct option alongside an incorrect selection", () => {
+    QuestionCardRender({ selectedAnswer: "b" });
+    expect(screen.getByTestId("answer-0")).toHaveClass("correct");
+    expect(screen.getByTestId("answer-0")).toHaveTextContent("Correct answer");
+    expect(screen.getByTestId("answer-1")).toHaveClass("incorrect");
+    expect(screen.getByRole("status")).toHaveTextContent("Incorrect. Correct answer: a");
+  });
+
 });

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchQuizQuestions } from "./utils/fetchQuiz";
 import { QuizQuestionWithAnswers } from "./types/Quiz";
+import { QUIZ_CATEGORIES } from "./constants/quizOptions";
 import QuizSetup from "./components/QuizSetup";
 import QuestionCard from "./components/QuestionCard";
 import QuizLoading from "./components/QuizLoading";
@@ -11,6 +12,7 @@ function App() {
   const [selectAnswer, setSelectAnswer] = useState<string | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [answerHistory, setAnswerHistory] = useState<string[]>([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [category, setCategory] = useState("");
   const [difficulty, setDifficulty] = useState("");
@@ -18,30 +20,14 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const currentQuestion = questions[currentQuestionIndex];
+  const [requestAttempt, setRequestAttempt] = useState(0);
 
-  const categories = [
-    "JavaScript",
-    "TypeScript",
-    "React",
-    "CSS/HTML",
-    "SQL",
-    "Database",
-    "Git",
-    "GitHub Actions",
-    "Docker",
-    "Kubernetes",
-    "AWS",
-    "DevOps",
-    "Cybersecurity",
-    "Web Security",
-    "Algorithms",
-    "Regular Expressions",
-    "Python",
-  ];
+  const currentQuestion = questions[currentQuestionIndex];
 
   useEffect(() => {
     if (!gameStarted) return;
+    let isCancelled = false;
+    const controller = new AbortController();
 
     const fetchData = async () => {
       setLoading(true);
@@ -50,27 +36,35 @@ function App() {
       setScore(0);
       setSelectAnswer(null);
 
-      const fetchedQuestions = await fetchQuizQuestions(
-        category,
-        difficulty,
-        limit,
-      );
-
-      setQuestions(fetchedQuestions);
-
-      if (fetchedQuestions.length === 0) {
-        setError(
-          "No questions found for this selection. Try another category or choose Any.",
-        );
+      setQuestions([]);
+      setAnswerHistory([]);
+      try {
+        const fetchedQuestions = await fetchQuizQuestions(category, difficulty, limit, controller.signal);
+        if (isCancelled) return;
+        setQuestions(fetchedQuestions);
+        if (fetchedQuestions.length === 0) {
+          setError("No questions found for this selection. Try another category or choose Any.");
+        }
+      } catch (requestError) {
+        if (isCancelled) return;
+        setError(requestError instanceof Error
+          ? requestError.message
+          : "Could not load questions. Please try again.");
+      } finally {
+        if (!isCancelled) setLoading(false);
       }
-
-      setLoading(false);
     };
 
     fetchData();
-  }, [gameStarted, category, difficulty, limit]);
+    return () => {
+      isCancelled = true;
+      controller.abort();
+    };
+  }, [gameStarted, category, difficulty, limit, requestAttempt]);
 
   const handleAnswerClick = (answer: string) => {
+    if (selectAnswer !== null || !currentQuestion) return;
+    setAnswerHistory((previous) => [...previous, answer]);
     setSelectAnswer(answer);
 
     if (answer === currentQuestion.correct_answer) {
@@ -83,13 +77,25 @@ function App() {
     setCurrentQuestionIndex((prev) => prev + 1);
   };
 
-  const handleRestart = () => {
+  const handleBackToSetup = () => {
     setSelectAnswer(null);
     setCurrentQuestionIndex(0);
     setScore(0);
     setQuestions([]);
     setError(null);
+    setAnswerHistory([]);
     setGameStarted(false);
+  };
+
+  const handleRetryMissed = () => {
+    const missed = questions.filter((question, index) =>
+      answerHistory[index] !== question.correct_answer);
+    if (missed.length === 0) return;
+    setQuestions(missed);
+    setAnswerHistory([]);
+    setSelectAnswer(null);
+    setCurrentQuestionIndex(0);
+    setScore(0);
   };
 
   return (
@@ -102,7 +108,7 @@ function App() {
           setDifficulty={setDifficulty}
           limit={limit}
           setLimit={setLimit}
-          categories={categories}
+          categories={QUIZ_CATEGORIES}
           onStart={() => setGameStarted(true)}
         />
       ) : loading ? (
@@ -110,8 +116,11 @@ function App() {
       ) : error ? (
         <div className="setup-container">
           <h1>Could not load quiz</h1>
-          <p>{error}</p>
-          <button onClick={handleRestart} className="setup-button">
+          <p role="alert">{error}</p>
+          <button onClick={() => setRequestAttempt((attempt) => attempt + 1)} className="setup-button">
+            Retry
+          </button>
+          <button onClick={handleBackToSetup} className="setup-button">
             Back to setup
           </button>
         </div>
@@ -123,7 +132,7 @@ function App() {
           selectedAnswer={selectAnswer}
           onAnswerClick={handleAnswerClick}
           onNextQuestion={handleNextQuestion}
-          onRestartQuestion={handleRestart}
+          onBackToSetup={handleBackToSetup}
           isLastQuestion={currentQuestionIndex === questions.length - 1}
           currentQuestionIndex={currentQuestionIndex}
           score={score}
@@ -133,7 +142,14 @@ function App() {
         <QuizComplete
           correct={score}
           questionsCount={questions.length}
-          onRestart={handleRestart}
+          review={questions.map((question, index) => ({
+            question: question.question,
+            correctAnswer: question.correct_answer,
+            selectedAnswer: answerHistory[index],
+          }))}
+          onRetryMissed={handleRetryMissed}
+          onChangeSettings={handleBackToSetup}
+          onPlayAgain={() => setRequestAttempt((attempt) => attempt + 1)}
         />
       )}
     </>

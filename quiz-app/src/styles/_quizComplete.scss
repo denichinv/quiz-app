@@ -23,3 +23,36 @@
     margin-top: var.$spacing-md;
   }
 }
+
+.quiz-complete {
+  max-width: var.$max-width-lg;
+  width: calc(100% - 2rem);
+
+  .results-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .answer-review {
+    margin-top: var.$spacing-xl;
+    text-align: left;
+    overflow-wrap: anywhere;
+
+    ol { list-style: none; }
+
+    li {
+      padding: var.$spacing-md;
+      margin-bottom: var.$spacing-md;
+      background: var.$background-lighter;
+      border-radius: var.$border-radius-sm;
+      border-left: 4px solid var.$success-color;
+    }
+
+    .review-incorrect { border-left-color: var.$error-color; }
+    h4 { margin-bottom: var.$spacing-sm; }
+    p { text-align: left; font-size: var.$font-size-sm; white-space: pre-wrap; }
+    p:last-child { margin-bottom: 0; }
+    .review-status { font-weight: var.$font-weight-bold; }
+  }
+}

@@ -1,0 +1,32 @@
+import { test, expect } from "@playwright/test";
+import { mockQuizQuestions } from "./mocks/quizQuestions";
+
+test("keyboard navigation, revealed answers, and early exit", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route("**/.netlify/functions/questions**", (route) => route.fulfill({ json: mockQuizQuestions.slice(0, 2) }));
+  await page.goto("/");
+  await page.getByLabel("Category:", { exact: true }).selectOption("React");
+  await page.getByRole("button", { name: "Start Quiz" }).click();
+  await expect(page.getByTestId("quiz-question")).toBeFocused();
+  const wrong = page.getByRole("button", { name: "A database", exact: true });
+  await wrong.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: /A database/ })).toHaveClass(/incorrect/);
+  await expect(page.getByRole("button", { name: /A JavaScript library/ })).toHaveClass(/correct/);
+  await expect(page.getByRole("button", { name: /A JavaScript library/ })).toHaveCSS("background-color", "rgb(200, 230, 201)");
+  await expect(page.getByRole("button", { name: /A database/ })).toHaveCSS("background-color", "rgb(255, 205, 210)");
+  await page.screenshot({ path: "/tmp/quiz-navigation-phone.png", fullPage: true });
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Back to setup" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: /Next Question/ })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.getByTestId("quiz-question")).toHaveText("What does CSS stand for?");
+  await expect(page.getByTestId("quiz-question")).toBeFocused();
+  await expect(page.getByRole("status")).toBeEmpty();
+  await page.getByRole("button", { name: "Back to setup" }).click();
+  await expect(page.getByLabel("Category:", { exact: true })).toHaveValue("React");
+  await page.getByRole("button", { name: "Start Quiz" }).click();
+  await expect(page.getByText("Score: 0 / 2")).toBeVisible();
+  await expect(page.getByText("Question 1 of 2")).toBeVisible();
+});
