@@ -3,9 +3,9 @@ version: alpha
 name: DevQuiz
 description: Developer practice quizzes with readable cards over a topographic background.
 colors:
-  primary: '#007bff'
-  accent: '#0066ff'
-  text: '#333333'
+  primary: '#2457d6'
+  accent: '#2457d6'
+  text: '#182c46'
   success: '#4caf50'
   error: '#f44336'
 typography:
@@ -41,7 +41,7 @@ Use the existing system font, 1rem body size, and 1.5 line height from `_base.sc
 
 ## Layout
 
-Setup uses the existing 500px maximum; questions and results use 800px. Results have phone gutters and natural document scrolling. Answer review is an ordered list matching quiz order, with actions above it.
+Setup uses a 1160px workspace with introduction and settings columns, stacked below 700px; questions and results use 800px. Results have phone gutters and natural document scrolling. Answer review is an ordered list matching quiz order, with actions above it.
 
 ## Elevation & Depth
 
@@ -68,3 +68,13 @@ QuizComplete owns results and answer review; QuestionCard owns active questions.
 | Capability | Canonical owner | Source of truth | Allowed variants | Verification |
 |---|---|---|---|---|
 | Select/Listbox | QuizSetup native select | Existing QuizSetup and this document | native | QuizSetup tests and home E2E |
+
+## September redesign: developer practice workspace
+
+The user requested an explained redesign. Preserve the topographic signature beneath a pale blue wash; opaque light cards make technical content readable. Setup uses an oversized Avenir Next/Segoe UI headline, system body typography, and SFMono-Regular/Consolas utility labels. The Choose → Practice → Review sequence describes the real quiz journey. No added dependencies or remote font requests.
+
+Canonical Sass roles: primary/accent #2457d6, text #182c46, secondary #52647a, page #edf3fa, border #d5dfed. `_variables.scss` owns values, `_base.scss` and component styles consume them, and this document mirrors intent. Global scrollbar colors use thumb #8394ab, hover #52647a, active #2457d6, and page-colored track, with system forced-colors fallback. Reduced motion disables animation and transitions globally. Native selects retain platform-owned popup behavior. Setup summary is derived from existing props, with a polite live announcement. Quiz logic and retry semantics remain unchanged.
+
+| Capability | Canonical owner | Source of truth | Allowed variants | Verification |
+|---|---|---|---|---|
+| Scrollbar | `_base.scss` | Sass roles in `_variables.scss` | global, forced-colors | browser computed styles |

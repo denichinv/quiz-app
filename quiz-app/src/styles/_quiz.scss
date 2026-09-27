@@ -105,7 +105,7 @@ button {
   @include mix.text-style(
     $size: var.$font-size-xxxl,
     $weight: var.$font-weight-bold,
-    $color: var.$text-color-white
+    $color: var.$text-color
   );
   @include mix.loading-animation();
   min-height: 50vh;
@@ -164,3 +164,12 @@ button {
   flex-wrap: wrap;
   justify-content: space-between;
 }
+
+.quiz-container { border: 1px solid var.$surface-border; }
+.quiz-question { font-family: var.$font-display; font-size: clamp(1.35rem, 3vw, 1.85rem); line-height: 1.4; margin: 1.5rem 0; }
+.quiz-button { border: 1px solid var.$surface-border; text-align: left; min-height: 56px; }
+.quiz-button:enabled:hover { border-color: var.$primary-blue; background: var.$page-background; }
+.score { font-style: normal; font-family: var.$font-utility; font-size: 0.85rem; margin-top: 0; box-shadow: none; }
+.quiz-navigation button:first-child { background: transparent; color: var.$primary-blue; }
+.quiz-navigation button:first-child:hover { background: var.$page-background; }
+@media (max-width: 700px) { .quiz-container { padding: 1.5rem; } }
