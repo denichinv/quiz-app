@@ -6,7 +6,7 @@
   text-align: center;
 }
 
-h1 {
+.setup-container h1 {
   @include mix.text-style(
     $size: var.$font-size-xxxl,
     $margin-bottom: var.$spacing-xl
@@ -37,4 +37,29 @@ h1 {
     $transition: var.$transition-medium
   );
   font-weight: var.$font-weight-bold;
+}
+
+.setup-workspace { max-width: 1160px; padding: 2rem clamp(1rem, 4vw, 3rem); margin: auto; }
+.setup-brand { display: flex; align-items: center; gap: 0.75rem; font-size: 1.35rem; font-weight: 750; }
+.setup-brand span { color: var.$primary-blue; font-family: var.$font-utility; }
+.setup-layout { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(2rem, 6vw, 5rem); align-items: center; padding: clamp(2.5rem, 7vw, 6rem) 0; }
+.setup-intro { min-width: 0; }
+.setup-eyebrow { font-family: var.$font-utility; font-size: 0.75rem; color: var.$text-secondary; letter-spacing: 0.02em; }
+.setup-intro h1 { font-family: var.$font-display; font-size: clamp(2.6rem, 4.8vw, 4.2rem); line-height: 1.06; letter-spacing: -0.045em; margin-bottom: 1.5rem; }
+.setup-intro > p:not(.setup-eyebrow) { color: var.$text-secondary; max-width: 38ch; }
+.practice-loop { display: flex; align-items: center; gap: 0.8rem; margin: 2rem 0 1rem; font-family: var.$font-utility; font-size: 0.85rem; color: var.$primary-blue; }
+.setup-intro .setup-note { font-size: 0.85rem; }
+.setup-panel { width: 100%; margin: 0; max-width: none; text-align: left; border: 1px solid var.$surface-border; box-shadow: 0 18px 50px rgba(24, 44, 70, 0.07); }
+.setup-panel h2 { font-family: var.$font-display; font-size: 1.8rem; letter-spacing: -0.03em; margin-bottom: 0.3rem; }
+.setup-description { color: var.$text-secondary; margin-bottom: 2rem; }
+.setup-panel select { min-height: 48px; cursor: pointer; background: var.$background-lighter; color: var.$text-color; border-color: var.$surface-border; }
+.setup-panel select:hover { border-color: var.$primary-blue; }
+.setup-summary { border-top: 1px solid var.$surface-border; padding-top: 1.25rem; color: var.$text-secondary; font-size: 0.8rem; overflow-wrap: anywhere; }
+.setup-panel .setup-button { width: 100%; margin: 0; min-height: 50px; }
+.setup-footer { color: var.$text-secondary; font-size: 0.8rem; border-top: 1px solid var.$surface-border; padding-top: 1rem; }
+@media (max-width: 700px) {
+  .setup-layout { grid-template-columns: 1fr; gap: 1.5rem; padding: 2.5rem 0; }
+  .setup-intro h1 { font-size: 2.8rem; }
+  .practice-loop { margin-top: 1.25rem; }
+  .setup-panel { padding: 1.5rem; }
 }

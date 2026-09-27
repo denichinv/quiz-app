@@ -56,3 +56,9 @@
     .review-status { font-weight: var.$font-weight-bold; }
   }
 }
+
+.quiz-complete { border: 1px solid var.$surface-border; border-radius: var.$border-radius-lg; }
+.quiz-complete h2 { font-family: var.$font-display; font-size: 2rem; letter-spacing: -0.03em; }
+.quiz-complete .results-actions button:last-child { background: transparent; color: var.$primary-blue; }
+.quiz-complete .results-actions button:last-child:hover { background: var.$page-background; }
+@media (max-width: 700px) { .quiz-complete { padding: 1.5rem; } }
