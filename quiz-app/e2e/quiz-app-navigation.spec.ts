@@ -23,7 +23,7 @@ test("keyboard navigation, revealed answers, and early exit", async ({ page }) =
   await page.keyboard.press("Enter");
   await expect(page.getByTestId("quiz-question")).toHaveText("What does CSS stand for?");
   await expect(page.getByTestId("quiz-question")).toBeFocused();
-  await expect(page.getByRole("status")).toBeEmpty();
+  await expect(page.locator(".answer-label")).toHaveCount(0);
   await page.getByRole("button", { name: "Back to setup" }).click();
   await expect(page.getByLabel("Category:", { exact: true })).toHaveValue("React");
   await page.getByRole("button", { name: "Start Quiz" }).click();

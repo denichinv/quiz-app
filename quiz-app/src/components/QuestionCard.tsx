@@ -59,12 +59,20 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         aria-valuemax={100}
         aria-valuenow={progressPercent}
       >
-        <div className="question-progress-bar" style={{ width: `${progressPercent}%` }} />
+        <div
+          className="question-progress-bar"
+          style={{ width: `${progressPercent}%` }}
+        />
       </div>
       <p className="question-progress" aria-live="polite">
         Question {currentQuestionIndex + 1} of {total}
       </p>
-      <h2 ref={questionHeading} tabIndex={-1} className="quiz-question" data-testid="quiz-question">
+      <h2
+        ref={questionHeading}
+        tabIndex={-1}
+        className="quiz-question"
+        data-testid="quiz-question"
+      >
         {question}
       </h2>
       <div className="quiz-answers">
@@ -91,11 +99,6 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         ))}
       </div>
 
-      <p className="answer-feedback" role="status">
-        {selectedAnswer !== null && (selectedAnswer === correctAnswer
-          ? "✅ Correct!"
-          : `❌ Incorrect. Correct answer: ${correctAnswer}`)}
-      </p>
       <div className="quiz-navigation">
         <button onClick={onBackToSetup}>Back to setup</button>
         {selectedAnswer !== null && (

@@ -5,19 +5,19 @@ Choose a developer-focused category, set the difficulty, and test your knowledge
 
 🔗 **Live Demo**: [dev-quiz-v.netlify.app](https://dev-quiz-v.netlify.app)
 
-![Coverage](https://img.shields.io/badge/coverage-90.12%25-brightgreen?logo=vitest)
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen?logo=vitest)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue?logo=typescript)
-![React](https://img.shields.io/badge/React-18-blue?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript)
+![React](https://img.shields.io/badge/React-19-blue?logo=react)
 
 ---
 
 ## 🧠 Features
 
 - 🎮 Custom quizzes by category, difficulty, and question count
-- ✅ Instant feedback on answer selection
-- 🧾 Score tracking and final results screen
-- 🔁 Restart quiz functionality
+- ✅ Correct and incorrect answers identified directly on the answer options
+- 🧾 Score tracking, answer review, and a link back to results after reviewing
+- 🔁 Retry missed questions without fetching again, or play a fresh quiz
+- ⏳ Loading card with a spinner and reduced-motion support
 - ⚠️ Empty-state handling when no questions are returned
 - 🔐 Server-side QuizAPI proxy using Netlify Functions
 - 🎨 Modular styling with SCSS/SASS
@@ -130,12 +130,7 @@ Run once without watch mode:
 npm run test -- --run
 ```
 
-**Coverage highlights:**
-
-- Components: 100%
-- Utilities: 100%
-- Integration coverage for app state and user flows
-- Overall coverage: ~90%
+Run the coverage command above to generate current coverage results.
 
 ---
 
@@ -150,11 +145,12 @@ They validate the main user journeys:
 - App loads successfully
 - Quiz can be started
 - Questions and answers render
-- Answer feedback appears
+- Answer options display correctness labels
 - Quiz can be completed
 - Results screen is displayed
 
 ```bash
+npx playwright install chromium
 npx playwright test
 ```
 

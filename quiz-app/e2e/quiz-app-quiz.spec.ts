@@ -24,7 +24,7 @@ test.describe("Quiz App – Quiz flow", () => {
     await expect(page.getByTestId("answer-0")).toBeDisabled();
     await expect(page.getByTestId("answer-1")).toBeDisabled();
 
-    await expect(page.getByRole("status")).toBeVisible();
+    await expect(page.getByText("Correct answer", { exact: true })).toBeVisible();
 
     await page.getByRole("button", { name: /next question/i }).click();
 
