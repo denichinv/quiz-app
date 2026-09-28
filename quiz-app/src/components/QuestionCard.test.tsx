@@ -129,7 +129,7 @@ describe("QuestionCard component tests", () => {
     QuestionCardRender({ selectedAnswer: "b" });
 
     expect(
-      screen.getByText("❌ Incorrect. Correct answer: a"),
+      screen.getByText("❌ Incorrect. Review the correct answer above."),
     ).toBeInTheDocument();
   });
   test('should apply the "correct" class to the correct button', () => {
@@ -158,7 +158,8 @@ describe("QuestionCard component tests", () => {
     expect(screen.getByTestId("answer-0")).toHaveClass("correct");
     expect(screen.getByTestId("answer-0")).toHaveTextContent("Correct answer");
     expect(screen.getByTestId("answer-1")).toHaveClass("incorrect");
-    expect(screen.getByRole("status")).toHaveTextContent("Incorrect. Correct answer: a");
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Incorrect. Review the correct answer above.",
+    );
   });
-
 });
