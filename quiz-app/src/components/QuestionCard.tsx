@@ -99,12 +99,6 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         ))}
       </div>
 
-      <p className="answer-feedback" role="status">
-        {selectedAnswer !== null &&
-          (selectedAnswer === correctAnswer
-            ? "✅ Correct!"
-            : "❌ Incorrect. Review the correct answer above.")}
-      </p>
       <div className="quiz-navigation">
         <button onClick={onBackToSetup}>Back to setup</button>
         {selectedAnswer !== null && (

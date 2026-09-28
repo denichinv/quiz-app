@@ -120,18 +120,6 @@ describe("QuestionCard component tests", () => {
 
     expect(onBackToSetup).toHaveBeenCalled();
   });
-  test("should shows correct message when correct answer is selected", () => {
-    QuestionCardRender({ selectedAnswer: "a" });
-
-    expect(screen.getByText("✅ Correct!")).toBeInTheDocument();
-  });
-  test("should shows incorrect message when correct answer is selected", () => {
-    QuestionCardRender({ selectedAnswer: "b" });
-
-    expect(
-      screen.getByText("❌ Incorrect. Review the correct answer above."),
-    ).toBeInTheDocument();
-  });
   test('should apply the "correct" class to the correct button', () => {
     QuestionCardRender({ selectedAnswer: "a" });
 
@@ -158,8 +146,6 @@ describe("QuestionCard component tests", () => {
     expect(screen.getByTestId("answer-0")).toHaveClass("correct");
     expect(screen.getByTestId("answer-0")).toHaveTextContent("Correct answer");
     expect(screen.getByTestId("answer-1")).toHaveClass("incorrect");
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "Incorrect. Review the correct answer above.",
-    );
+    expect(screen.getByTestId("answer-1")).toHaveTextContent("Your answer · Incorrect");
   });
 });
