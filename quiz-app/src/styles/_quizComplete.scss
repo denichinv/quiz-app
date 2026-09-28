@@ -39,7 +39,9 @@
     text-align: left;
     overflow-wrap: anywhere;
 
-    ol { list-style: none; }
+    ol {
+      list-style: none;
+    }
 
     li {
       padding: var.$spacing-md;
@@ -49,16 +51,65 @@
       border-left: 4px solid var.$success-color;
     }
 
-    .review-incorrect { border-left-color: var.$error-color; }
-    h4 { margin-bottom: var.$spacing-sm; }
-    p { text-align: left; font-size: var.$font-size-sm; white-space: pre-wrap; }
-    p:last-child { margin-bottom: 0; }
-    .review-status { font-weight: var.$font-weight-bold; }
+    .review-incorrect {
+      border-left-color: var.$error-color;
+    }
+    h4 {
+      margin-bottom: var.$spacing-sm;
+    }
+    p {
+      text-align: left;
+      font-size: var.$font-size-sm;
+      white-space: pre-wrap;
+    }
+    p:last-child {
+      margin-bottom: 0;
+    }
+    .review-status {
+      font-weight: var.$font-weight-bold;
+    }
   }
 }
 
-.quiz-complete { border: 1px solid var.$surface-border; border-radius: var.$border-radius-lg; }
-.quiz-complete h2 { font-family: var.$font-display; font-size: 2rem; letter-spacing: -0.03em; }
-.quiz-complete .results-actions button:last-child { background: transparent; color: var.$primary-blue; }
-.quiz-complete .results-actions button:last-child:hover { background: var.$page-background; }
-@media (max-width: 700px) { .quiz-complete { padding: 1.5rem; } }
+.quiz-complete {
+  border: 1px solid var.$surface-border;
+  border-radius: var.$border-radius-lg;
+}
+.quiz-complete h2 {
+  font-family: var.$font-display;
+  font-size: 2rem;
+  letter-spacing: -0.03em;
+}
+.quiz-complete .results-actions button:last-child {
+  background: transparent;
+  color: var.$primary-blue;
+}
+.quiz-complete .results-actions button:last-child:hover {
+  background: var.$page-background;
+}
+@media (max-width: 700px) {
+  .quiz-complete {
+    padding: 1.5rem;
+  }
+}
+
+.back-to-results {
+  display: inline-block;
+  margin-top: var.$spacing-md;
+  padding: 0.75rem 0;
+  color: var.$primary-blue;
+  font-weight: var.$font-weight-semibold;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var.$primary-blue;
+    outline-offset: 4px;
+    border-radius: var.$border-radius-sm;
+  }
+}

@@ -10,19 +10,34 @@ interface QuizCompleteProps {
 }
 
 const QuizComplete: React.FC<QuizCompleteProps> = ({
-  correct, questionsCount, review, onRetryMissed, onChangeSettings, onPlayAgain,
+  correct,
+  questionsCount,
+  review,
+  onRetryMissed,
+  onChangeSettings,
+  onPlayAgain,
 }) => {
   const heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => { heading.current?.focus(); }, []);
-  const missedCount = review.filter((item) => item.selectedAnswer !== item.correctAnswer).length;
+  useEffect(() => {
+    heading.current?.focus();
+  }, []);
+  const missedCount = review.filter(
+    (item) => item.selectedAnswer !== item.correctAnswer,
+  ).length;
 
   return (
     <div className="quiz-complete">
-      <h2 ref={heading} tabIndex={-1}>🎉 Quiz Complete!</h2>
-      <p>Final Score: {correct} / {questionsCount}</p>
+      <h2 id="results-heading" ref={heading} tabIndex={-1}>
+        🎉 Quiz Complete!
+      </h2>
+      <p>
+        Final Score: {correct} / {questionsCount}
+      </p>
       <div className="results-actions">
         {missedCount > 0 && (
-          <button onClick={onRetryMissed}>Retry missed questions ({missedCount})</button>
+          <button onClick={onRetryMissed}>
+            Retry missed questions ({missedCount})
+          </button>
         )}
         <button onClick={onPlayAgain}>Play again</button>
         <button onClick={onChangeSettings}>Change settings</button>
@@ -33,15 +48,31 @@ const QuizComplete: React.FC<QuizCompleteProps> = ({
           {review.map((item, index) => {
             const isCorrect = item.selectedAnswer === item.correctAnswer;
             return (
-              <li key={index} className={isCorrect ? "review-correct" : "review-incorrect"}>
-                <h4>{index + 1}. {item.question}</h4>
-                <p className="review-status">{isCorrect ? "Correct" : "Incorrect"}</p>
-                <p><strong>Your answer:</strong> {item.selectedAnswer}</p>
-                {!isCorrect && <p><strong>Correct answer:</strong> {item.correctAnswer}</p>}
+              <li
+                key={index}
+                className={isCorrect ? "review-correct" : "review-incorrect"}
+              >
+                <h4>
+                  {index + 1}. {item.question}
+                </h4>
+                <p className="review-status">
+                  {isCorrect ? "Correct" : "Incorrect"}
+                </p>
+                <p>
+                  <strong>Your answer:</strong> {item.selectedAnswer}
+                </p>
+                {!isCorrect && (
+                  <p>
+                    <strong>Correct answer:</strong> {item.correctAnswer}
+                  </p>
+                )}
               </li>
             );
           })}
         </ol>
+        <a className="back-to-results" href="#results-heading">
+          Back to results ↑
+        </a>
       </section>
     </div>
   );
