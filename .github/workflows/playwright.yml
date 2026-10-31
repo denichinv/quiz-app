@@ -8,7 +8,8 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Playwright 1.57 supports Ubuntu 24.04; keep the runner compatible.
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
 
     steps:
@@ -26,7 +27,7 @@ jobs:
 
       - name: Install Playwright browsers
         working-directory: quiz-app
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
         working-directory: quiz-app
