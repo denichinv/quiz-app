@@ -1,214 +1,158 @@
-# DevQuiz 🎯
+# DevQuiz
 
-A developer-focused quiz app built with **React**, **TypeScript**, **Vite**, and **SASS**.  
-Choose a developer-focused category, set the difficulty, and test your knowledge with random multiple-choice questions powered by [QuizAPI.io](https://quizapi.io/).
+A developer-focused quiz app built with React, TypeScript, Vite, and Sass. Choose a topic and difficulty, practice with multiple-choice questions, and review the answers you missed.
 
-🔗 **Live Demo**: [dev-quiz-v.netlify.app](https://dev-quiz-v.netlify.app)
+[Live demo](https://dev-quiz-v.netlify.app)
 
-![Coverage](https://img.shields.io/badge/coverage-90.12%25-brightgreen?logo=vitest)
-![Tests](https://img.shields.io/badge/tests-passing-brightgreen?logo=vitest)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.5-blue?logo=typescript)
-![React](https://img.shields.io/badge/React-18-blue?logo=react)
+## Features
 
----
+- Choose a developer topic, difficulty, and 5, 10, 15, or 20 questions.
+- Follow your score and question position with a progress bar.
+- Get immediate feedback, with labels and colors identifying correct and incorrect answers.
+- Review each question and your answer after finishing.
+- Retry missed questions from the latest round without another API request.
+- Play again with the original settings or return to setup to change them.
+- Recover from connection errors, service failures, and timeouts using Retry.
+- Use a responsive practice workspace with keyboard focus management, live answer feedback, and reduced-motion support.
 
-## 🧠 Features
+The quiz supports single-answer questions. Unsupported or ambiguous questions are filtered out, so a round may contain fewer questions than requested. Progress indicates the current question position; it reaches 100% when the final question appears.
 
-- 🎮 Custom quizzes by category, difficulty, and question count
-- ✅ Instant feedback on answer selection
-- 🧾 Score tracking and final results screen
-- 🔁 Restart quiz functionality
-- ⚠️ Empty-state handling when no questions are returned
-- 🔐 Server-side QuizAPI proxy using Netlify Functions
-- 🎨 Modular styling with SCSS/SASS
+## Tech stack
 
----
+- React 19 and TypeScript 5.8
+- Vite 7
+- Sass with shared variables, mixins, and global SCSS partials
+- QuizAPI through a server-side Netlify Function
+- Vitest and React Testing Library
+- Playwright for browser tests
 
-## 📦 Tech Stack
+See [package.json](quiz-app/package.json) and [package-lock.json](quiz-app/package-lock.json) for dependency versions.
 
-- ⚛️ React + TypeScript
-- ⚡ Vite
-- 🎨 SASS / SCSS
-- 🔌 QuizAPI.io
-- ☁️ Netlify + Netlify Functions
-- 🧪 Vitest + React Testing Library
-- 🎭 Playwright for end-to-end testing
-
----
-
-## 🚀 Getting Started
-
-This repository uses a nested app structure:
-
-```txt
-repo-root/
-├── netlify.toml
-└── quiz-app/
-    ├── src/
-    ├── netlify/functions/
-    └── package.json
-```
+## Local development
 
 Install dependencies from the app directory:
 
 ```bash
 cd quiz-app
-npm install
+npm ci
 ```
 
-Create a local environment file:
-
-```bash
-touch .env
-```
-
-Add your QuizAPI key:
-
-```env
-QUIZ_API_KEY=your_api_key_here
-```
-
-The API key is used only by the Netlify Function. It is not exposed to the browser.
-
-For normal frontend development:
+For frontend-only development:
 
 ```bash
 npm run dev
 ```
 
-For local development with the Netlify Function proxy, run Netlify Dev from the repository root:
+Vite alone does not serve the Netlify Function. To load real questions, run Netlify Dev from the repository root with `QUIZ_API_KEY` set in the same terminal environment:
 
 ```bash
+# From the quiz-app directory, return to the repository root:
 cd ..
+export QUIZ_API_KEY=your_api_key_here
 npx netlify dev
 ```
 
----
+Open the local URL printed by Netlify Dev. This runs the app locally; it does not deploy it. Loading real questions makes requests to QuizAPI.
 
-## 🔐 API Proxy
+For hosting, configure `QUIZ_API_KEY` in the Netlify site's environment. Keep the key server-side, do not commit it, and do not give it a `VITE_` prefix. Vite-prefixed variables are exposed to the browser.
 
-The frontend does not call QuizAPI directly.
+## Quiz actions
 
-Instead, the app calls:
+| Action | Behavior |
+| --- | --- |
+| Back to setup | Leaves the active round and keeps the selected settings. |
+| Retry | Retries a failed request using the same settings. |
+| Retry missed questions | Starts a fresh score using only questions missed in the latest round. No new questions are fetched. |
+| Play again | Fetches a fresh quiz using the original category, difficulty, and requested count. |
+| Change settings | Returns from results to setup. |
 
-```txt
-/.netlify/functions/questions
-```
+Quiz progress and answer history are held in memory; refreshing the page resets the session.
 
-The Netlify Function then:
+## API proxy
 
-- reads `QUIZ_API_KEY` from the server environment
-- calls QuizAPI securely
-- normalizes the QuizAPI response
-- returns a stable question format to the React app
+The frontend requests `GET /.netlify/functions/questions`. The function:
 
-This keeps the API key server-side and prevents exposing it in browser requests.
+1. Validates the category, difficulty, and question count against the options shared with the setup screen.
+2. Reads `QUIZ_API_KEY` from the server environment and calls QuizAPI.
+3. Checks the response structure and normalizes it for the frontend.
+4. Returns controlled errors without exposing upstream error details.
 
----
+The server aborts upstream requests after 10 seconds. The browser has a separate 15-second request deadline, covering response-body reading, and cancels requests that are no longer needed. Timeout errors offer Retry.
 
-## 🧪 Testing
+The frontend validates each normalized question, requiring at least two distinct, nonempty answers and exactly one correct answer. Empty results, unsupported questions, connection failures, rate limits, and invalid responses have separate messages.
 
-This project includes both **unit/integration tests** and **end-to-end tests**.
+## Testing and checks
 
-### Unit & Integration Tests
-
-Written using **Vitest** and **React Testing Library**.
-
-```bash
-npm run test
-```
-
-Run with coverage:
+Run these commands from `quiz-app/`:
 
 ```bash
-npm run test -- --coverage
-```
-
-Run once without watch mode:
-
-```bash
+# Unit, component, integration, and server-function tests
 npm run test -- --run
+
+# Generate current coverage figures
+npm run test -- --run --coverage
+
+# Static analysis
+npm run lint
+
+# TypeScript checks and production build
+npm run build
 ```
 
-**Coverage highlights:**
+Vitest includes tests under `src/` and `netlify/tests/`. Server tests mock QuizAPI and cover input validation, response normalization, malformed data, failures, and timeouts. They do not require an API key or make real QuizAPI calls.
 
-- Components: 100%
-- Utilities: 100%
-- Integration coverage for app state and user flows
-- Overall coverage: ~90%
-
----
-
-### End-to-End Tests
-
-E2E tests are written with **Playwright**.
-
-The tests run against a local Vite dev server and mock the Netlify Function response. This keeps the tests fast, stable, and independent from third-party API limits.
-
-They validate the main user journeys:
-
-- App loads successfully
-- Quiz can be started
-- Questions and answers render
-- Answer feedback appears
-- Quiz can be completed
-- Results screen is displayed
+To run browser tests:
 
 ```bash
+# Install Chromium once after dependency installation
+npx playwright install chromium
 npx playwright test
-```
 
-Open the Playwright HTML report:
-
-```bash
+# Open the HTML report
 npx playwright show-report
 ```
 
----
+Playwright starts a local Vite server and mocks the function response. Tests cover setup, answers, completion, review, missed-question retries, replay, keyboard navigation, phone/desktop layouts, and timeout recovery. Browser tests do not make real QuizAPI calls.
 
-## 🔐 Environment Variables
+Coverage is generated from the current checkout rather than represented by a fixed percentage badge.
 
-| Key            | Used by          | Description                    |
-| -------------- | ---------------- | ------------------------------ |
-| `QUIZ_API_KEY` | Netlify Function | Server-side QuizAPI.io API key |
+## Project structure
 
-Do not prefix this key with `VITE_`.
-
-`VITE_` environment variables are exposed to the browser by Vite, so they are not appropriate for private API secrets.
-
----
-
-## 📁 Folder Structure
-
-```txt
-quiz-app/
-├── e2e/
-│   ├── mocks/
-│   ├── quiz-app-home.spec.ts
-│   ├── quiz-app-quiz.spec.ts
-│   └── quiz-app-results.spec.ts
-├── netlify/
-│   └── functions/
-│       └── questions.ts
-├── src/
-│   ├── components/
-│   │   ├── *.test.tsx
-│   ├── styles/
-│   ├── types/
-│   ├── utils/
-│   │   ├── *.test.ts
-│   ├── App.tsx
-│   ├── App.test.tsx
-│   └── main.tsx
+```text
+.
+├── README.md
+├── netlify.toml
+├── .github/workflows/          # Test and browser-test workflows
+└── quiz-app/
+    ├── package.json
+    ├── e2e/                   # Playwright tests and mock questions
+    ├── netlify/
+    │   ├── functions/         # QuizAPI proxy
+    │   └── tests/             # Server-function tests
+    ├── public/
+    └── src/
+        ├── assets/
+        ├── components/        # Setup, question, loading, and results screens
+        ├── constants/         # Shared categories, difficulties, and counts
+        ├── styles/            # Global SCSS partials
+        ├── types/
+        ├── utils/             # Fetching, question validation, and shuffling
+        ├── App.tsx            # Quiz state and transitions
+        └── main.tsx
 ```
 
----
+## Netlify configuration
 
-## 👨‍💻 Author
+The root `netlify.toml` defines:
 
-**Vilizar Denichin**  
-Frontend Developer (React & TypeScript)
+- Base directory: `quiz-app`
+- Build command: `npm run build`
+- Publish directory: `dist`, relative to the base directory
+- Functions directory: `netlify/functions`, relative to the base directory
+- A fallback rewrite to `index.html`
 
-🔗 Portfolio: https://vilizar.dev
-🔗 GitHub: https://github.com/denichinv  
-🔗 LinkedIn: https://linkedin.com/in/vilizar-denichin
+## Author
+
+**Vilizar Denichin** — Frontend Developer (React & TypeScript)
+
+[Portfolio](https://vilizar.dev) · [GitHub](https://github.com/denichinv) · [LinkedIn](https://linkedin.com/in/vilizar-denichin)
